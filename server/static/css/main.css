@@ -22,7 +22,11 @@
 	position: relative;
 	top: 10px;
 	text-align: center;
-	margin-left: 150px;
+	margin-left: 175px;
+}
+
+.none {
+	display: none;
 }
 
 /* Links */
@@ -49,10 +53,5 @@ hr.small {
 }
 
 @media only screen and (max-width: 767px) {
-	#nav_top {
-	position: relative;
-	top: 10px;
-	text-align: center;
-	margin-left: 0;
-}
+	#nav_top {margin-left: 0;}
 }
