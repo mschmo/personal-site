@@ -1,0 +1,2 @@
+DEBUG = 'TRUE'
+TESTING = 'TRUE'
