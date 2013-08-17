@@ -1,0 +1,26 @@
+/*
+*  Matthew Schmoyer
+*  Aug 16 2013
+*/
+
+/* Color theme */
+.dark_blue {color: #2C3E50;	}
+.red {color: #FA4248;}
+.gray {color:#D7DADB;}
+.light_blue{color:#6DBCDB;}
+
+a, a:visited {
+	color: #2C3E50;
+	font-weight: bold;
+	text-decoration: none;
+}
+a:hover, a:focus {color:#003050;}
+a.under_line:hover, a.under_line:focus {
+	text-decoration: underline;
+}
+
+.temp_header_adjust {
+	position: relative;
+	left: 175px;
+	top: 113px;
+}
