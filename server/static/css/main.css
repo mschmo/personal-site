@@ -20,3 +20,12 @@ a:hover, a:focus {color:#003050;}
 a.under_line:hover, a.under_line:focus {
 	text-decoration: underline;
 }
+
+hr.small {
+	margin: 10px 0 10px;
+}
+
+.icon {
+	margin: 0 5px 0;
+	font-size: 20px;
+}
