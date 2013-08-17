@@ -10,6 +10,21 @@
 .gray {color:#D7DADB;}
 .light_blue{color:#6DBCDB;}
 
+.row {
+	margin-bottom: 0;
+}
+
+#schmoyer_header {
+	margin-left: 0;
+}
+
+#nav_top {
+	position: relative;
+	top: 10px;
+	text-align: center;
+	margin-left: 150px;
+}
+
 /* Links */
 a, a:visited {
 	color: #2C3E50;
@@ -20,6 +35,9 @@ a:hover, a:focus {color:#003050;}
 a.under_line:hover, a.under_line:focus {
 	text-decoration: underline;
 }
+a.active {
+	color: #6DBCDB;
+}
 
 hr.small {
 	margin: 10px 0 10px;
@@ -28,4 +46,13 @@ hr.small {
 .icon {
 	margin: 0 5px 0;
 	font-size: 20px;
+}
+
+@media only screen and (max-width: 767px) {
+	#nav_top {
+	position: relative;
+	top: 10px;
+	text-align: center;
+	margin-left: 0;
+}
 }
