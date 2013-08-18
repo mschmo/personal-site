@@ -5,10 +5,10 @@
 */
 
 /* Color theme */
-.dark_blue {color: #2C3E50;	}
-.red {color: #FA4248;}
-.gray {color:#D7DADB;}
-.light_blue{color:#6DBCDB;}
+.dark_blue 	{ color: #2C3E50; }
+.red 		{ color: #FA4248; }
+.gray 		{ color: #D7DADB; }
+.light_blue	{ color: #6DBCDB; }
 
 .row {
 	margin-bottom: 0;
@@ -41,6 +41,9 @@ a.under_line:hover, a.under_line:focus {
 }
 a.active {
 	color: #6DBCDB;
+}
+a.active:hover {
+	cursor: default;
 }
 
 hr.small {
