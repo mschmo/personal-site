@@ -1,9 +1,3 @@
-/*
-*  Matthew Schmoyer
-*  Aug 16 2013
-*
-*/
-
 /* Color theme */
 .dark_blue 	{ color: #2C3E50; }
 .red 		{ color: #FA4248; }
@@ -45,7 +39,16 @@ a.active {
 a.active:hover {
 	cursor: default;
 }
+#main-link {
+	width:100%;
+	height:100%;
+	top:0;
+	left: 0;
+	z-index: 1;
+}
 
+
+/* misc */
 hr.small {
 	margin: 10px 0 10px;
 }
