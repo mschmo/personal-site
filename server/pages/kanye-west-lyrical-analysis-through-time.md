@@ -18,4 +18,4 @@ That of couse is coming from the same man who spoke these words:
 
 Given such an interesting collection of comments, I was curious if there has been any pattern in Kanye's word choices over the past decade that could reflect shifts in his emotion and/or attitude. I decided to look at the lyrics of his discography - specifically his [7 studio albums](http://en.wikipedia.org/wiki/Kanye_West_discography#Studio_albums) which date from 2004 to 2013.
 
-To collect this poetic data I wrote a simple Python script to scrape [azlyrics](http://www.azlyrics.com/).  You can check out the source for the scipt [here](). Across the 7 albums there were a total of 109 tracks and 47,243 words (non-unique and prior to any editing).
+To collect this poetic data I wrote a simple Python script to scrape [azlyrics](http://www.azlyrics.com/).  You can check out the source for the scipt [here](https://github.com/mschmo/personal-site/blob/master/server/snippets/azlyrics.py). Across the 7 albums there were a total of 109 tracks and 47,243 words (non-unique and prior to any editing).
