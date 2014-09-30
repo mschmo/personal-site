@@ -1,10 +1,21 @@
 title: Kanye West Lyrical Analysis Through Time
 date: 2014-09-26
-tags: [music, analysis, kanye west]
+tags: [music, analysis, kanye west, python, requests, beautifulsoup]
 
-Put a Kanye quote here which relates to his opinion on his own lyrics.
-Is there a big gap here?  Literally none.
+<div class="markdown-center">
+    <img alt="Great Men Through History" src="https://img1.etsystatic.com/000/0/6104496/il_fullxfull.336235413.jpg">
+</div>
 
-Also, learn how to use all the tricks of Markdown.
+Some say he is the voice of this generation. Some say he likes [fish sticks](http://en.wikipedia.org/wiki/Fishsticks_(South_Park)). Regardless of what some say, Kanye himself says many things.
 
-[link for google](http://www.google.com)
+#####_"I’m like a vessel, and God has chosen me to be the voice and the connector."_
+<div></div>
+
+That of couse is coming from the same man who spoke these words:
+
+#####_"Eatin' Asian pussy, all I need was sweet and sour sauce."_
+<div></div>
+
+Given such an interesting collection of comments, I was curious if there has been any pattern in Kanye's word choices over the past decade that could reflect shifts in his emotion and/or attitude. I decided to look at the lyrics of his discography - specifically his [7 studio albums](http://en.wikipedia.org/wiki/Kanye_West_discography#Studio_albums) which date from 2004 to 2013.
+
+To collect this poetic data I wrote a simple Python script to scrape [azlyrics](http://www.azlyrics.com/).  You can check out the source for the scipt [here](). Across the 7 albums there were a total of 109 tracks and 47,243 words (non-unique and prior to any editing).
