@@ -11,7 +11,8 @@ posts = FlatPages(app)
 def index():
     return render_template('index.html', posts=posts)
 
+
 @app.route('/<path:path>/')
-def page(path):
-    page = posts.get_or_404(path)
-    return render_template('post.html', page=page)
+def post(path):
+    post = posts.get_or_404(path)
+    return render_template('post.html', post=post)

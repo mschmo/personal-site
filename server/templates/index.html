@@ -1,4 +1,6 @@
+{% set title = 'Matthew Schmoyer' %}
 {% extends 'base.html' %}
+
 {% block main_content %}
     <div class="five columns">
       <p>Hey there! How are you? My name is Matt. I'm a junior software engineer at <a href="http://50onred.com" target="blank">50onRed</a> in Philadelphia.</p>
@@ -20,7 +22,7 @@
         <a class="icon" href="https://github.com/mschmo" title="Github">
           <i class="icon-github"></i>
         </a>
-        <a class="icon" href="mailto:mlschmoyer@temple.edu?subject=Hello" title="E-Mail">
+        <a class="icon" href="mailto:mattschmo@gmail.com?subject=Hello" title="E-Mail">
           <i class="icon-envelope"></i>
         </a>
         <a class="icon" href="#" title="Subscribe (Atom)">
@@ -29,22 +31,19 @@
       </div>
     </div>
 
-    <!-- Main content -->
     <div id="main_content" class="eleven columns">
       <div name="blog" id="tab_body_blog">
+        <h3>Posts</h3>
         {% for post in posts %}
-            <li>
-                <a href="{{ url_for('page', path=post.path) }}">{{ post.title }}</a>
-            </li>
-        {% else %}
-            <li>No stuff.</li>
+          <a href="{{ url_for('post', path=post.path) }}">{{ post.title }}</a>
         {% endfor %}
       </div>
       <div name="portfolio" id="tab_body_portfolio" class="none">
         <h3>This is where my projects will go!</h3>
       </div>
       <div name="contact" id="tab_body_contact" class="none">
-        <h3>This is how you can contact me!</h3>
+        <h3>Holla at me.</h3>
+        <p>You can always send me an email at mattschmo@gmail.com</p>
       </div>
     </div>
 
