@@ -11,6 +11,9 @@ posts = FlatPages(app)
 def index():
     return render_template('index.html', posts=posts)
 
+@app.route('/d3_test')
+def d3_test():
+    return render_template('d3_test.html')
 
 @app.route('/<path:path>/')
 def post(path):
