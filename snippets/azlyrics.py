@@ -29,6 +29,7 @@ def format_albums(albums):
     for album in albums:
         title = album[0].text
         album_title = re.search('\"(.*?)\"', title).group(1)
+        print('Getting data for {}'.format(album_title))
         formatted_albums[album_title] = {
             'year': re.search('\((.*?)\)', title).group(1),
             'track_count': len(album) - 1,
@@ -38,6 +39,7 @@ def format_albums(albums):
     return formatted_albums
 
 def get_lyrics(relative_url):
+    print('Getting lyrics from {}'.format(relative_url))
     try:
         soup = BeautifulSoup(requests.get(relative_url.replace('..', AZ_BASE_URL)).text)
         sleep(10)
