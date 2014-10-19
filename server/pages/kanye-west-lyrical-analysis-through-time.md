@@ -22,7 +22,7 @@ To collect this poetic data I wrote a simple Python script to scrape [azlyrics](
 
 Longest track is 'Last Call' with 2,599 words (a 12:41 track from The College Dropout). Shortest track is 'Intro' with 68 words (a 19 second skit also from The College Dropout). Interesting that Intro is the first track and Last Call is the last track on the same album.
 
-I filtered out 127 [stopwords](http://en.wikipedia.org/wiki/Stop_words). Lower strings, join, remove unicode
+I filtered out 127 [stopwords](http://en.wikipedia.org/wiki/Stop_words).
 
 1. lowercase words
 2. all_lyrics.encode('utf-8').decode('ascii', 'ignore')
@@ -44,8 +44,11 @@ sns.set(style="white", context="talk")
 sns.barplot(np.array(labels), np.array(values), ci=None, palette="Paired", hline=.1)
 sns.despine(bottom=True)
 plt.show()
-</code></pre>
+</code></pre><br />
 
+Below I am playing with [plotly](https://plot.ly/) to embed interactive graphs produced with python:
+
+<br />
 <div class="markdown-center">
-    <img src="../static/img/kanye-west-lyrical-analysis-through-time/figure_1.png" style="width:100%;height:65%">
+    <iframe width="560" height="420" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~mschmoyer/0.embed?width=560&height=420"></iframe>
 </div>
