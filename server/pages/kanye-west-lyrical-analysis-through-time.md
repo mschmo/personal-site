@@ -1,4 +1,4 @@
-title: Kanye West Lyrical Analysis Through Time
+title: Lyrical Analysis of Kanye West
 date: 2014-10-01
 tags: [music, analysis, kanye west, python, requests, beautifulsoup]
 
@@ -24,18 +24,28 @@ Longest track is 'Last Call' with 2,599 words (a 12:41 track from The College Dr
 
 I filtered out 127 [stopwords](http://en.wikipedia.org/wiki/Stop_words). Lower strings, join, remove unicode
 
-<pre><code class="language-python">all_lyrics = ' '.join([lyrics['raw'].lower() for track, lyrics in stats['tracks'].iteritems() for album, stats in yeezy.iteritems()])
-all_lyrics = all_lyrics.encode('utf-8').decode('ascii', 'ignore')
-re.sub(r"\[^.*\['(.*)'\].*$\]", '', all_lyrics)
-</code></pre>
-
-remove punctuatio, then split on ' '
-then remove stopwords
-remove 1 character words
-c = Counter(lyric for lyric in split_lyrics if lyric not in stopwords)
+1. lowercase words
+2. all_lyrics.encode('utf-8').decode('ascii', 'ignore')
+3. remove punctuation, then split on ' '
+4. then remove stopwords
+5. remove 1 character words
 
 After left with 34,073 words (55.4% of the total count).
 
+<pre><code class="language-python">import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from collections import Counter
+
+# blackskinhead is a list of words used in Black Skinhead
+labels, values = zip(*Counter(blackskinhead).most_common(5))
+
+sns.set(style="white", context="talk")
+sns.barplot(np.array(labels), np.array(values), ci=None, palette="Paired", hline=.1)
+sns.despine(bottom=True)
+plt.show()
+</code></pre>
+
 <div class="markdown-center">
-    <img src="../static/img/kanye-west-lyrical-analysis-through-time/test_word_count.png">
+    <img src="../static/img/kanye-west-lyrical-analysis-through-time/figure_1.png" style="width:100%;height:65%">
 </div>
