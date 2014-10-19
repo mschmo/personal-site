@@ -24,9 +24,10 @@ Longest track is 'Last Call' with 2,599 words (a 12:41 track from The College Dr
 
 I filtered out 127 [stopwords](http://en.wikipedia.org/wiki/Stop_words). Lower strings, join, remove unicode
 
-In [99]: all_lyrics = ' '.join([lyrics['raw'].lower() for track, lyrics in stats['tracks'].iteritems() for album, stats in yeezy.iteritems()])
-In [100]: all_lyrics = all_lyrics.encode('utf-8').decode('ascii', 'ignore')
-In [114]: re.sub(r"\[^.*\['(.*)'\].*$\]", '', all_lyrics)
+<pre><code class="language-python">all_lyrics = ' '.join([lyrics['raw'].lower() for track, lyrics in stats['tracks'].iteritems() for album, stats in yeezy.iteritems()])
+all_lyrics = all_lyrics.encode('utf-8').decode('ascii', 'ignore')
+re.sub(r"\[^.*\['(.*)'\].*$\]", '', all_lyrics)
+</code></pre>
 
 remove punctuatio, then split on ' '
 then remove stopwords
@@ -38,8 +39,3 @@ After left with 34,073 words (55.4% of the total count).
 <div class="markdown-center">
     <img src="../static/img/kanye-west-lyrical-analysis-through-time/test_word_count.png">
 </div>
-
-<code>
-    def fuck():
-        return True
-</code>
