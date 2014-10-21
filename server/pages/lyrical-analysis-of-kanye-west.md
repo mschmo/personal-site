@@ -3,7 +3,7 @@ date: 2014-10-01
 tags: [music, analysis, kanye west, python, requests, beautifulsoup]
 
 <div class="markdown-center">
-    <img alt="Great Men Through History" src="../static/img/kanye-west-lyrical-analysis-through-time/great_men.jpg">
+    <img alt="Great Men Through History" src="../static/img/kanye/great_men.jpg">
 </div>
 
 Some say he is the voice of this generation. Some say he likes [fish sticks](http://en.wikipedia.org/wiki/Fishsticks_(South_Park)). But regardless of what some say, Kanye himself says many things.
