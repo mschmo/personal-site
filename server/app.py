@@ -14,9 +14,8 @@ def index():
     articles = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
     return render_template('index.html', posts=articles)
 
-@app.route('/feed.atom')
+@app.route('/feed.atom/')
 def feed():
-    return 'Fuck'
     feed = AtomFeed('Recent Articles', feed_url=request.url, url=request.url_root)
     articles = sorted(pages, reverse=True, key=lambda p: p.meta['date'])[:5]
     for article in articles:
