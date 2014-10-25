@@ -4,7 +4,7 @@
 {% block main_content %}
     <div class="five columns">
       <p>Hey there! How are you? My name is Matt. I'm a junior software engineer at <a href="http://50onred.com" target="blank">50onRed</a> in Philadelphia.</p>
-      <p>I put up this site so that I could share my personal thoughts with the internet.</p>
+      <p>I put up this site so that I could share my personal thoughts with my Mom back in Pittsburgh.</p>
       <hr class="small">
       <div id="social">
         <a class="icon" href="https://github.com/mschmo" title="Github">
@@ -22,16 +22,24 @@
     <div id="main_content" class="eleven columns">
       <div name="blog" id="tab_body_blog">
         {% for post in posts %}
-          <h5><a href="{{ url_for('post', path=post.path) }}">{{ post.title }}</a></h5>
-          <br />
+          <span>
+            <h4 style="display:inline"><a href="{{ url_for('post', path=post.path) }}">{{ post.title }}</a></h4>
+            <em style="display:inline;float:right">{{ post.date }}</em>
+          </span>
+          <br /><br />
         {% endfor %}
       </div>
       <div name="portfolio" id="tab_body_portfolio" class="none">
         <h3>This is where my projects will go!</h3>
       </div>
       <div name="contact" id="tab_body_contact" class="none">
-        <h3>Holla at me.</h3>
-        <p>You can always send me an email at mattschmo@gmail.com</p>
+        <h3>Holla At Me</h3>
+        <p>You can send me a message with the form below or email me at <a href="mailto:mattschmo@gmail.com?subject=Hello">mattschmo@gmail.com</a>.</p>
+        <form id="send-message" action="{{ url_for('send_message') }}" method="POST">
+          Email: <input type="text" name="sender" placeholder="So I can respond">
+          Message: <textarea name="message" rows="4" cols="150">Tell or ask me whatever you want...</textarea>
+          <input type="submit" value="Send">
+        </form>
       </div>
     </div>
 

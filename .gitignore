@@ -2,3 +2,4 @@ venv
 *.pyc
 server/build
 fabfile.py
+config.cfg

@@ -2,22 +2,37 @@ from urlparse import urljoin
 from flask import Flask, render_template, request
 from flask_flatpages import FlatPages
 from werkzeug.contrib.atom import AtomFeed
+import requests
 
 
 app = Flask(__name__)
 app.config.from_pyfile('config_default.py')
+app.config.from_envvar('SCHMOYER_SETTINGS')
 pages = FlatPages(app)
 
 
 @app.route('/')
 def index():
-    articles = sorted(pages, reverse=True, key=lambda p: p.meta['date'])
+    articles = _get_articles_by_date()
     return render_template('index.html', posts=articles)
+
+@app.route('/send_message/', methods=['POST'])
+def send_message():
+    form = request.form
+    requests.post(app.config['MAILGUN_MESSAGE_URL'],
+        auth=('api', app.config['MAILGUN_API_KEY']),
+        data={
+            'from': form['sender'],
+            'to': 'mattschmo@gmail.com',
+            'subject': 'New Message From Your Site',
+            'html': render_template('email.html', message=form['message'])
+        })
+    return 'Thanks for the message, dude.'
 
 @app.route('/feed.atom/')
 def feed():
     feed = AtomFeed('Recent Articles', feed_url=request.url, url=request.url_root)
-    articles = sorted(pages, reverse=True, key=lambda p: p.meta['date'])[:5]
+    articles = _get_articles_by_date()[:5]
     for article in articles:
         feed.add(article['title'],
                 author='Matt Schmoyer',
@@ -30,3 +45,6 @@ def feed():
 def post(path):
     post = pages.get_or_404(path)
     return render_template('post.html', post=post)
+
+def _get_articles_by_date():
+    return sorted(pages, reverse=True, key=lambda p: p.meta['date'])
