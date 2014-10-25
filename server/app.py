@@ -1,5 +1,5 @@
 from urlparse import urljoin
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_flatpages import FlatPages
 from werkzeug.contrib.atom import AtomFeed
 import requests
@@ -27,7 +27,8 @@ def send_message():
             'subject': 'New Message From Your Site',
             'html': render_template('email.html', message=form['message'])
         })
-    return 'Thanks for the message, dude.'
+    # TODO: Use ajax to send message
+    return redirect(url_for('index'))
 
 @app.route('/feed.atom/')
 def feed():
