@@ -36,8 +36,10 @@
         <h3>Holla At Me</h3>
         <p>You can send me a message with the form below or email me at <a href="mailto:mattschmo@gmail.com?subject=Hello">mattschmo@gmail.com</a>.</p>
         <form id="send-message" action="{{ url_for('send_message') }}" method="POST">
-          Email: <input type="text" name="sender" placeholder="So I can respond">
-          Message: <textarea name="message" rows="4" cols="150">Tell or ask me whatever you want...</textarea>
+          <label for="email-input">Email</label>
+          <input id="email-input" type="text" name="sender" placeholder="So I can holla back">
+           <label for="message-input">Message</label>
+           <textarea id="message-input" name="message" rows="4" cols="150">Tell or ask me whatever you want...</textarea>
           <input type="submit" value="Send">
         </form>
       </div>
