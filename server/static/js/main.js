@@ -1,6 +1,20 @@
 
 $(document).ready(function() {
 
+    $('#send-message').submit(function(e) {
+        e.preventDefault();
+        $.post('/send_message/', $(this).serialize()).done(function(data) {
+            $('#holla-at-me').hide();
+            $('#thanks-for-the-holla').fadeIn('slow');
+        });
+    });
+
+    $('#send-again').click(function(e) {
+        e.preventDefault();
+        $('#thanks-for-the-holla').hide();
+        $('#holla-at-me').fadeIn('slow');
+    });
+
     function tab_click(tab) {
         if (tab.hasClass('active'))
             return false;

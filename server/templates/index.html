@@ -20,6 +20,7 @@
     </div>
 
     <div id="main_content" class="eleven columns">
+
       <div name="blog" id="tab_body_blog">
         {% for post in posts %}
           <span>
@@ -29,20 +30,30 @@
           <br /><br />
         {% endfor %}
       </div>
+
       <div name="portfolio" id="tab_body_portfolio" class="none">
-        <h3>This is where my projects will go!</h3>
+        <h4><a href="http://www.foodunderground.net/">Food Underground</a></h4>
+        <h4><a href="http://www.youfoosyoulose.com/">You Foos You Lose</a></h4>
       </div>
+
       <div name="contact" id="tab_body_contact" class="none">
-        <h3>Holla At Me</h3>
-        <p>You can send me a message with the form below or email me at <a href="mailto:mattschmo@gmail.com?subject=Hello">mattschmo@gmail.com</a>.</p>
-        <form id="send-message" action="{{ url_for('send_message') }}" method="POST">
-          <label for="email-input">Email</label>
-          <input id="email-input" type="text" name="sender" placeholder="So I can holla back">
-           <label for="message-input">Message</label>
-           <textarea id="message-input" name="message" rows="4" cols="150">Tell or ask me whatever you want...</textarea>
-          <input type="submit" value="Send">
-        </form>
+        <div id="holla-at-me">
+          <h3>Holla At Me</h3>
+          <p>You can send me a message with the form below or email me at <a href="mailto:mattschmo@gmail.com?subject=Hello">mattschmo@gmail.com</a>.</p>
+          <form id="send-message">
+            <label for="email-input">Email</label>
+            <input id="email-input" type="text" name="sender" placeholder="So I can holla back">
+             <label for="message-input">Message</label>
+             <textarea id="message-input" name="message" rows="4" cols="150">Tell or ask me whatever you want...</textarea>
+            <input type="submit" value="Send">
+          </form>
+        </div>
+        <div id="thanks-for-the-holla" class="none">
+          <h4>Thanks for the message!</h4>
+          <p>I will get back to you as soon as possible. If you want, you can send another message <a id="send-again" href="">here</a>.</p>
+        </div>
       </div>
+
     </div>
 
 {% endblock %}

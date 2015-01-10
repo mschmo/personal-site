@@ -1,8 +1,9 @@
+import json
+import requests
 from urlparse import urljoin
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from flask_flatpages import FlatPages
 from werkzeug.contrib.atom import AtomFeed
-import requests
 
 
 app = Flask(__name__)
@@ -13,22 +14,22 @@ pages = FlatPages(app)
 
 @app.route('/')
 def index():
-    articles = _get_articles_by_date()
-    return render_template('index.html', posts=articles)
+    return render_template('index.html', posts=_get_articles_by_date())
 
 @app.route('/send_message/', methods=['POST'])
 def send_message():
     form = request.form
-    requests.post(app.config['MAILGUN_MESSAGE_URL'],
+    response = requests.post(app.config['MAILGUN_MESSAGE_URL'],
         auth=('api', app.config['MAILGUN_API_KEY']),
         data={
             'from': form['sender'],
             'to': 'mattschmo@gmail.com',
             'subject': 'New Message From Your Site',
-            'html': render_template('email.html', message=form['message'])
+            'html': render_template('email.html',
+                                    message=form['message'],
+                                    sender=form['sender'])
         })
-    # TODO: Use ajax to send message
-    return redirect(url_for('index'))
+    return json.dumps({'success': response.text})
 
 @app.route('/feed.atom/')
 def feed():
