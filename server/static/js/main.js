@@ -23,17 +23,29 @@ $(document).ready(function() {
         $("div[id^='tab_body_']").hide();
     }
 
+    function change_tab(tab, body) {
+        console.log(tab);
+        tab_click(tab);
+        $(body).fadeIn('slow');
+    }
+
     $('#tab_blog').click(function() {
-        tab_click($(this));
-        $('#tab_body_blog').fadeIn('slow');
+        change_tab($(this), '#tab_body_blog');
     });
     $('#tab_portfolio').click(function() {
-        tab_click($(this));
-        $('#tab_body_portfolio').fadeIn('slow');
+        change_tab($(this), '#tab_body_portfolio');
     });
     $('#tab_contact').click(function() {
-        tab_click($(this));
-        $('#tab_body_contact').fadeIn('slow');
+        change_tab($(this), '#tab_body_contact');
     });
+
+    var url_hash = window.location.hash;
+    if (location.pathname == '/' && url_hash != '#portfolio' && url_hash != '#contact') {
+        change_tab($('#tab_blog'), '#tab_body_blog');
+    } else if (url_hash == '#portfolio') {
+        change_tab($('#tab_portfolio'), '#tab_body_portfolio');
+    } else if (url_hash == '#contact') {
+        change_tab($('#tab_contact'), '#tab_body_contact');
+    }
 
 });
