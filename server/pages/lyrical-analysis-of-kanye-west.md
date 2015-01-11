@@ -53,5 +53,5 @@ I'm going to probably have 3 charts. One will be a bar of total words - both fil
 
 #### References
 1. [Common English Words](http://www.textfixer.com/resources/common-english-words.php)
-2. [Something else]()
-3. [Another one]()
+2. [MusicMood](http://sebastianraschka.com/Articles/2014_musicmood.html)
+3. [Natural Language Toolkit](http://www.nltk.org/)
