@@ -1,5 +1,5 @@
 title: Lyrical Analysis of Kanye West
-date: 2014-10-01
+date: 2015-01-11
 tags: [music, analysis, kanye west, python, requests, beautifulsoup]
 
 <div class="markdown-center">
@@ -43,11 +43,13 @@ data = Data([Bar(x=labels, y=values)])
 ply.plot(data, filename='kanye/blackskinhead')
 </code></pre>
 
-Below I am playing with [plotly](https://plot.ly/) to embed interactive graphs produced with python. This shows the 5 most common words from Black Skinhead:
+I decided to say fuck plotly, because the iframe is a pain in the ass to load. This shows the 5 most common words from Black Skinhead:
 
-<div class="markdown-center">
-    <iframe width="560" height="420" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~mschmoyer/2.embed?width=560&height=420"></iframe>
-</div>
+<div id="container"></div>
+
+The above is an example Highcharts graph. I want to see what looks good and shit.
+
+And yeah, this shit looks good.
 
 I'm going to probably have 3 charts. One will be a bar of total words - both filtered and unfiltered - by album. Another will be a bar of the most common words. And the third will be a line chart over time of key words (like fuck, love, bitch, happy).
 
@@ -55,3 +57,48 @@ I'm going to probably have 3 charts. One will be a bar of total words - both fil
 1. [Common English Words](http://www.textfixer.com/resources/common-english-words.php)
 2. [MusicMood](http://sebastianraschka.com/Articles/2014_musicmood.html)
 3. [Natural Language Toolkit](http://www.nltk.org/)
+
+<script type="text/javascript">
+$(function () {
+    $('#container').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Common Words from "Black Skinhead"'
+        },
+        xAxis: {
+            type: 'category',
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '13px',
+                    fontFamily: 'Verdana, sans-serif'
+                }
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Times Used'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+            name: 'Times Used',
+            data: [
+                ["I'm", 19],
+                ["Ain't", 7],
+                ['Shit', 7],
+                ['Know', 6],
+                ['Black', 5]
+            ],
+        }]
+    });
+});
+</script>
