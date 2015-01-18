@@ -32,7 +32,7 @@ I filtered out 127 [stopwords](http://en.wikipedia.org/wiki/Stop_words).
 
 After left with 34,073 words (55.4% of the total count).
 
-<pre><code class="language-python">import plotly.plotly as ply
+<pre class="get-away"><code class="language-python">import plotly.plotly as ply
 from plotly.graph_objs import *
 from collections import Counter
 
@@ -43,9 +43,17 @@ data = Data([Bar(x=labels, y=values)])
 ply.plot(data, filename='kanye/blackskinhead')
 </code></pre>
 
+I need to......
+
+spread this shit out......
+
+it's getting all crammed up in hurr....
+
 I decided to say fuck plotly, because the iframe is a pain in the ass to load. This shows the 5 most common words from Black Skinhead:
 
-<div id="container"></div>
+<div id="chart-container" class="get-away"></div>
+
+Ok, so what theme should I use. Should it be dark or light is the main question here.
 
 The above is an example Highcharts graph. I want to see what looks good and shit.
 
@@ -60,7 +68,7 @@ I'm going to probably have 3 charts. One will be a bar of total words - both fil
 
 <script type="text/javascript">
 $(function () {
-    $('#container').highcharts({
+    $('#chart-container').highcharts({
         chart: {
             type: 'column'
         },
