@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Crypto 101</title>
+
+    <meta name="description" content="Intro to Cryptography with Real-World Applications">
+    <meta name="author" content="Matt Schmoyer">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reveal/reveal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reveal/theme/night.css') }}" id="theme">
+
+    <!-- Code syntax highlighting -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reveal/zenburn.css') }}">
+
+    <!-- Printing and PDF exports -->
+    <script>
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = window.location.search.match( /print-pdf/gi ) ? "{{ url_for('static', filename='css/reveal/print/pdf.css') }}" : "{{ url_for('static', filename='css/reveal/print/paper.css') }}";
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <div class="slides">
+
+        <!-- INTRO -->
+        <section>
+          <h1>Cracking Crypto</h1>
+          <h3>Intro to Cryptography with Real-World Applications</h3>
+          <p>
+            <small>Created by <a href="http://mattschmoyer.com">Schmo</a></small>
+          </p>
+        </section>
+
+        <!-- PRIMER -->
+        <section>
+          <section>
+            <h2>What Exactly Is Crypto?</h2>
+            <h5>Put simply, cryptography is the practice of constructing and analyzing protocols that block adversaries.</h5>
+          </section>
+          <section>
+            <blockquote>"Lots of people working in cryptography have no deep concern with real application issues. They are trying to discover things clever enough to write papers about."</blockquote>
+          </section>
+        </section>
+
+        <!-- BRIEF HISTORY -->
+        <section>
+          <section>
+            <h2>Brief History</h2>
+            <h4>The use of codes and ciphers has been around for thousands of years.</h4>
+          </section>
+          <section>
+            <h3>Ancient</h3>
+            <p>Earliest known use of cryptography is found in hieroglyphics circa 1900 BC.</p>
+            <p>Hebrew scholars used simple <strong>monoalphabetic subsitution</strong> ciphers around 500-600 BC.</p>
+            <p>Ancient Greeks used ciphers, such as the scytale transposition cipher used by the Spartan military.</p>
+            <img data-src="{{ url_for('static', filename='img/projects/crypto/history_scytale.gif') }}" style="width:50%">
+          </section>
+          <section>
+            <h3>Medieval</h3>
+            <p>Modern cryptonography originated among the Arabs, specifically for their work in <strong>cryptanalysis</strong>. Their <strong>frequency-analysis</strong> technique for breaking monoalphabetic substitution ciphers is first mentioned around 800 AD.</p>
+            <p>The outcome of the Babington Plot in 1586 to assisinate Queen Elizabeth was a direct result of crytography and the cryptoanalysis of monoalphabetic substitution ciphers.</p>
+          </section>
+          <section>
+            <h3>World War II</h3>
+            <p>Mechanical and electromechanical cipher machines were now being used.</p>
+            <img data-src="{{ url_for('static', filename='img/projects/crypto/history_enigma.jpg') }}" style="width:35%">
+          </section>
+          <section>
+            <h3>Modern</h3>
+            <p>Currently, encryption is achieved by using algorithms that have a key. The key converts the data into "digital gibberish" and then return them to their original form through decryption.</p>
+            <p>Starting in the 1900s, commercial uses of the Internet demanded for a widespread standard in encryption. <strong>Public-key enryption</strong> became one of the most notable advances in cryptography since WWII in the late 1900s.</p>
+          </section>
+        </section>
+
+        <!-- XOR -->
+        <section>
+          <section>
+            <h2>XOR</h2>
+            <h5>An exclusive or is a boolean binary function that is true when either the first OR second input (but not both) is true.</h5>
+          </section>
+          <section>
+            <h3>Arithmetic Rules</h3>
+            <p>In mathematics, XOR is generally represented by a cross in a circle: ⊕</p>
+            <table style="margin-bottom:30px">
+              <tbody>
+                <tr>
+                  <td>0 ⊕ 0 = 0</td>
+                  <td>1 ⊕ 0 = 1</td>
+                <tr>
+                <tr>
+                  <td>0 ⊕ 1 = 1</td>
+                  <td>1 ⊕ 1 = 0</td>
+                <tr>
+              </tbody>
+            </table>
+            <ol>
+              <li class="fragment">Apply XOR in any order: a ⊕ b = b ⊕ a</li>
+              <li class="fragment">Any bit XOR itself is 0: a ⊕ a = 0</li>
+              <li class="fragment">Any bit XOR 0 is that bit again: a ⊕ 0 = a</li>
+            </ol>
+          </section>
+          <section>
+            <h3>Bitwise XOR</h3>
+            <p>Python uses the ^ (caret) operator for bitwise XOR on integers:</p>
+            <pre><code data-trim contenteditable>x = 60 ^ 13 # x == 49
+            </code></pre>
+            <table>
+              <tbody>
+                <tr>
+                  <td>60 ⊕ 13 =</td>
+                  <td>0b1001001 ⊕ 0b1010111</td>
+                <tr>
+                <tr>
+                  <td></td>
+                  <td>0 0 1 1 1 1 0 0 (left 60)</td>
+                <tr>
+                <tr>
+                  <td style="text-align:right">⊕</td>
+                  <td>0 0 0 0 1 1 0 1 (right 13)</td>
+                <tr>
+                <tr>
+                  <td style="text-align:right">=</td>
+                  <td>0 0 1 1 0 0 0 1</td>
+                <tr>
+                <tr>
+                  <td style="text-align:right">=</td>
+                  <td>49</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </section>
+
+        <!-- ONE TIME PADS -->
+        <section>
+          <section>
+            <h2>One-Time Pad</h2>
+            <h4>An encryption scheme that consists of the simple XOR.</h4>
+          </section>
+          <section>
+            <h3>Perfect Security</h3>
+            <p>Eve sees that a particular ciphertext bit <span>$c_i$</span> is 1. She has no idea if the matching plaintext bit <span>$p_i$</span> was 0 or 1.</p>
+            <img data-src="{{ url_for('static', filename='img/projects/crypto/onetime_pad_1.png') }}" style="width:50%">
+            <p class="fragment">If the bits are truly random and the pad is only used once, the attacker learns nothing about the plaintext when they see a ciphertext.</p>
+          </section>
+          <section>
+            <h3>Possible Attacks</h3>
+            <p>The one-time pad security guarantee only holds if it is used correctly.</p>
+            <ul>
+              <li class="fragment">Not using truly random data</li>
+              <li class="fragment">Reusing the pad</li>
+            </ul>
+            <p class="fragment"><strong>Crib-dragging</strong> is an approach to breaking a mult-time pad by using small sequences that are expected to occur with high probability.</p>
+          </section>
+          <section>
+            <h3>So... Are We Done Here?</h3>
+            <p>Not quite. One-time pads are very impractical.</p>
+            <ul>
+              <li class="fragment">The key is at least as large as the information being sent</li>
+              <li class="fragment">Keys need to be exchanged securely with all parties</li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- BLOCK CIPHERS -->
+        <section>
+          <section>
+            <h2>Block Ciphers</h2>
+            <h4>Algorithm that allows us to encrypt blocks of a fixed length.</h4>
+          </section>
+          <section>
+            <h3>Encryption Function</h3>
+            <p>Turns plaintext blocks P into ciphertext blocks C, using a secret key k using function E:</p>
+            <span>$C = E(k, P)$</span>
+            <p>Later to decrypt, the same key k is used in function D:</p>
+            <span>$P = D(k, C)$</span>
+            <p class="fragment">This is known as a <strong>secret-key encryption</strong> scheme. This differs from <strong>public-key encryption</strong>, which uses a distinct key for encryption and decryption.</p>
+          </section>
+          <section>
+            <h3>Advanced Encryption Standard (AES)</h3>
+            <p>AES is a common block cipher.</p>
+            <p class="fragment">Replaces its predecessor DES. No practical attacks known against AES.</p>
+          </section>
+          <section>
+            <h3>Still Some Issues</h3>
+            <ol>
+              <li>Can only send messages of a very limited length</li>
+              <li>Still need to agree on key over insecure channel</li>
+            </ol>
+            <p class="fragment">The first issue will be adressed with <strong>stream ciphers</strong> and the second with a <strong>key exchange protocol</strong>.</p>
+          </section>
+        </section>
+
+        <!-- STREAM CIPHERS -->
+        <section>
+          <section>
+            <h2>Stream Ciphers</h2>
+            <h4>A symmetric-key encryption algorithm that encrypts a stream of bits.</h4>
+          </section>
+          <section>
+            <h3>RC4</h3>
+            <p>A symmetric-key encryption algorithm that encrypts a stream of bits.</p>
+          </section>
+          <section>
+            <h3>So Close, But Still Some Issues</h3>
+            <p>While the key to be exchanged is a lot smaller now than it was with one-time pads, we still need a way to handle the impossibly large number of key exchanges.</p>
+            <p class="fragment">Additionally, without <strong>authentication</strong> attackers can modify a message.</p>
+          </section>
+        </section>
+
+        <!-- KEY EXCHANGE -->
+        <section>
+          <section>
+            <h2>Key Exchange</h2>
+            <h4>Protocols attempt to solve a problem that seems impossible - share a secret value on an insecure channel between two parties that have never met.</h4>
+          </section>
+          <section>
+            <h3>Diffie-Hellman</h3>
+            <p>Very complex to solve in the <em>wrong</em> direction, but easy to compute in the <em>right</em> direction.</p>
+          </section>
+          <section>
+            <h3>When Will The Remaining Issues End?</h3>
+            <p>Diffie-Hellman is subject to <strong>man-in-the-middle</strong> attacks.</p>
+          </section>
+        </section>
+
+        <!-- PUBLIC KEY ENCRYPTION -->
+        <section>
+          <section>
+            <h2>Public Key Encryption</h2>
+            <h4>Public key encryption uses a key pair: a secret key (discussed previously) and a freely distibuted public key.</h4>
+          </section>
+          <section>
+            <h3>Types of Algorithms</h3>
+            <ol>
+              <li><strong>Key exchange algorithms</strong> (e.g. Diffie-Hellman) which allow you to agree on a shared secret across an insecure medium</li>
+              <li><strong>Encryption algorithms</strong>, which allow people to encrypt without having to agree on a shared secret</li>
+              <li><strong>Signature algorithms</strong>, which allow you to sign any piece of information using your private key in a way that allows anyone else to easily verify it using your public key</li>
+            </ol>
+            <p class="fragment">Most practical cryptosystems are hyrbid using both public and private key algorithms.</p>
+          </section>
+          <section>
+            <h3>RSA</h3>
+            <p>One of the first practical public-key encryption schemes. The encryption/decryption rely on modular arithmetic.</p>
+            <p class="fragment">Key generation: Multiply two large primes <span>$p$</span> and <span>$q$</span> to get <span>$N$</span>. This is put together with the encryption exponent <span>$e$</span>, forming the public key <span>$(N, e)$</span>. Decryption uses the decryption exponent <span>$d$</span>.</p>
+            <table class="fragment">
+              <thead>
+                <tr>
+                  <th>Encrypt</th>
+                  <th>Decrypt</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span>$C = M^e$</span> (mod <span>$N$</span>)</td>
+                  <td><span>$M = C^d$</span> (mod <span>$N$</span>)</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+          <section>
+            <h3>Example of Improper Application</h3>
+            <p>Sound components, improperly applied, result in a useless system.</p>
+            <p class="fragment"><strong>Salt</strong> is a provisioning system written in Python that implements its own cryptosystem.</p>
+            <span class="fragment">
+              <p>Until <a href="https://github.com/saltstack/salt/commit/5dd304276ba5745ec21fc1e6686a0b28da29e6fc" target="_blank">recently</a>, Salt used a public exponent of 1 meaning that the resulting ciphertext was just the plaintext!</p>
+              <span>$e = 1$ then $m^e = N$ so $c = m$ (mod $N$)</span><p></p>
+              <span>Since $m < N$ then $m$ (mod $N$) $= m$ so $c = m$</span>
+            </span>
+          </section>
+          <section>
+            <h3>Still Need Authenticated Encryption</h3>
+            <p>We need a way to verift that the message is what the sender originally sent.</p>
+            <p>This will done by adding extra information to the message that only the sender could have computed.</p>
+          </section>
+        </section>
+
+        <!-- HASH FUNCTION -->
+        <section>
+          <section>
+            <h2>Hash Functions</h2>
+            <h4>Functions that take an input of indeterminate length and produce a fixed-length value.</h4>
+          </section>
+          <section>
+            <h3>Cryptographic Hash Functions</h3>
+            <p>Needs to be impossibly hard to:</p>
+            <ol>
+              <li class="fragment">Modify a message without changing the hash</li>
+              <li class="fragment">Generate a message that has given a hash</li>
+              <li class="fragment">Find two different messages with the same hash</li>
+            </ol>
+            <aside class="notes">1.Each bit of the digest will have approximately 50% chance of flipping 2.Hash is a one-way function 3. collision resistance</aside>
+          </section>
+          <section>
+            <h3>MD5 and SHA</h3>
+            <p>These are two widely used cryptographic hash functions.</p>
+            <table class="fragment">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>MD5</th>
+                  <th>SHA-1</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Bits</strong></td>
+                  <td>128</td>
+                  <td>160</td>
+                </tr>
+              </tbody>
+            </table>
+            <span class="fragment">
+            <pre><code data-trim contenteditable>string md5 ( string $str [, bool $raw_output = false ] );
+string sha1 ( string $str [, bool $raw_output = false ] );
+            </code></pre>
+            <p>The SHA-1 function is recommended for checksumming data securely. Being longer, it is less likely to have a <strong>collision</strong>, though MD5 offers a slight speed advantage.</p>
+            </span>
+          </section>
+          <section>
+            <h3>Password Storage</h3>
+            <p>This is a common use case, and yet it is broken!</p>
+            <p class="fragment">It has been assumed that hashing passwords before storing them in a database would be secure. An attacker who gains access to the database would only be able to see the hash values.</p>
+            <p class="fragment">A huge problem, however, is that the amount of passwords that can be used is limited (8-20 characters) and hash functions are the same everywhere.</p>
+            <p class="fragment"><strong>Rainbow tables</strong> are large tables mapping passwords to their hash values.</p>
+          </section>
+          <section>
+            <h3>Salt</h3>
+            <p>Salt values are random values mixed with a password before hashing it. A large random salt will defeat ahead-of-time attacks like rainbow tables.</p>
+            <p class="fragment">Systems that use a single salt for all users would still allow attackers to attack all passwords simultaneously.</p>
+            <p class="fragment">Even with a new salt per user, modern attacks take advantage of the fact that hash functions are easy to compute. Hardware can compute <span>$5.6 * 10^9$</span> MD5s/s.</p>
+            <p class="fragment">Solution: <strong>Key Dervivation Functions</strong></p>
+            <aside class="notes">I don't get a chance to cover KDF in detail. They are functions that derive one or more secret values from one "master" value. The KDF is hard to compute (takes a lot of CPU cylces/memory).</aside>
+          </section>
+          <section>
+            <h3>Don't Be So Harsh on the Hash</h3>
+            <p>Hash functions are very important cryptographic tools, they are just often misused.</p>
+            <p class="fragment">Next, it's time to take care of authenticating messages.</p>
+          </section>
+        </section>
+
+        <!-- MESSAGE AUTHENTICATION CODES -->
+        <section>
+          <section>
+            <h2>Message Authentication Codes</h2>
+            <h4>A MAC is a small bit of information that can be used to check the authenticity and the integrity of a message.</h4>
+          </section>
+          <section>
+            <h3>MAC Algorithm</h3>
+            <p>Takes a message of arbitrary length and a secret key of fixed length producing a tag. Many secure MAC algorithms are randomized and will produce different tags everytime they are applied.</p>
+            <p class="fragment">Three ways to combine ciphertext with a MAC:</p>
+            <ol>
+              <li class="fragment">Authenticate and encrypt (e.g. SSH)</li>
+              <li class="fragment">Authenticate <em>then</em> encrypt (e.g. TLS)</li>
+              <li class="fragment">Encrypt then authenticate (e.g. IPSec)</li>
+            </ol>
+            <p class="fragment">Both 1 and 2 require you to decrypt something before you can verify the authentication.</p>
+          </section>
+          <section>
+            <h3>Issues With Authentication Methods</h3>
+            <p>"Any system that does anything before checking the MAC is doomed."</p>
+            <p class="fragment"><strong>Authenticate-and-encrypt</strong>: Since the tag authenticates the plaintext and that tag is part of the transmitted message, an attacker will be able to recognize two plaintext messages are the same because their tags will also be the same.</p>
+          </section>
+        </section>
+
+        <section>
+          <h2>Resources</h2>
+          <ul>
+            <li><a href="https://www.coursera.org/course/crypto">Coursera's Cryptography 1</li>
+            <li><a href="https://www.crypto101.io/">Crypto 101</a></li>
+            <li><a href="http://www.amazon.com/The-Code-Book-Science-Cryptography/dp/0385495323">The Code Book by Simon Singh</a></li>
+            <li><a href="http://en.wikipedia.org/wiki/History_of_cryptography">History of Cryptography</a></li>
+            <li><a href="https://github.com/hakimel/reveal.js/">Reveal.js</a></li>
+          </ul>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/vendor/head.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor/reveal.js') }}"></script>
+
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+            { src: "{{ url_for('static', filename='js/vendor/classList.js') }}", condition: function() { return !document.body.classList; } },
+            { src: "{{ url_for('static', filename='js/vendor/highlight.js') }}", async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+            { src: "{{ url_for('static', filename='js/vendor/notes.js') }}", async: true },
+            { src: "{{ url_for('static', filename='js/vendor/notes.js') }}", async: true },
+            { src: "{{ url_for('static', filename='js/vendor/math.js') }}", async: true }
+        ],
+
+        math: {
+          mathjax: 'http://cdn.mathjax.org/mathjax/latest/MathJax.js',
+          config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+        }
+      });
+    </script>
+
+  </body>
+</html>

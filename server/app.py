@@ -48,5 +48,9 @@ def post(path):
     post = pages.get_or_404(path)
     return render_template('post.html', post=post)
 
+@app.route('/projects/crypto_presentation')
+def crypto_presentation():
+    return render_template('projects/crypto_presentation.html')
+
 def _get_articles_by_date():
     return sorted(pages, reverse=True, key=lambda p: p.meta['date'])
