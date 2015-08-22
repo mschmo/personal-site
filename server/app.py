@@ -52,5 +52,9 @@ def post(path):
 def crypto_presentation():
     return render_template('projects/crypto_presentation.html')
 
+@app.route('/admin')
+def admin():
+    return 'Schmo Dash'
+
 def _get_articles_by_date():
     return sorted(pages, reverse=True, key=lambda p: p.meta['date'])
