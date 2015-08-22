@@ -1,11 +1,48 @@
-/*================================================================================
-	Item Name: Materialize - Material Design Admin Template
-	Version: 2.2
-	Author: GeeksLabs
-	Author URL: http://www.themeforest.net/user/geekslabs
-================================================================================
+/* CSS - Cascading Style Sheet */
+/* Palette color codes */
+/* Palette URL: http://paletton.com/#uid=33a0j0kllllaFw0g0qFqFg0w0aF */
 
-NOTE:
-------
-PLACE HERE YOUR OWN CSS CODES AND IF NEEDED, OVERRIDE THE STYLES FROM THE OTHER STYLESHEETS.
-WE WILL RELEASE FUTURE UPDATES SO IN ORDER TO NOT OVERWRITE YOUR STYLES IT'S BETTER LIKE THIS.  */
+/* Feel free to copy&paste color codes to your application */
+
+
+/* As hex codes */
+
+.burn-green-0 { color: #256F5C }	/* Main Primary color */
+.burn-green-1 { color: #6FA698 }
+.burn-green-2 { color: #458A79 }
+.burn-green-3 { color: #0E5342 }
+.burn-green-4 { color: #003729 }
+
+.burn-yellow-0 { color: #AA7639 }	/* Main Secondary color (1) */
+.burn-yellow-1 { color: #FFD8AA }
+.burn-yellow-2 { color: #D4A46A }
+.burn-yellow-3 { color: #804F15 }
+.burn-yellow-4 { color: #552E00 }
+
+.burn-red-0 { color: #AA4139 }	/* Main Secondary color (2) */
+.burn-red-1 { color: #FFB0AA }
+.burn-red-2 { color: #D4726A }
+.burn-red-3 { color: #801D15 }
+.burn-red-4 { color: #550600 }
+
+
+
+/* As RGBa codes */
+
+.rgba-burn-green-0 { color: rgba( 37,111, 92,1) }	/* Main Primary color */
+.rgba-burn-green-1 { color: rgba(111,166,152,1) }
+.rgba-burn-green-2 { color: rgba( 69,138,121,1) }
+.rgba-burn-green-3 { color: rgba( 14, 83, 66,1) }
+.rgba-burn-green-4 { color: rgba(  0, 55, 41,1) }
+
+.rgba-burn-yellow-0 { color: rgba(170,118, 57,1) }	/* Main Secondary color (1) */
+.rgba-burn-yellow-1 { color: rgba(255,216,170,1) }
+.rgba-burn-yellow-2 { color: rgba(212,164,106,1) }
+.rgba-burn-yellow-3 { color: rgba(128, 79, 21,1) }
+.rgba-burn-yellow-4 { color: rgba( 85, 46,  0,1) }
+
+.rgba-burn-red-0 { color: rgba(170, 65, 57,1) }	/* Main Secondary color (2) */
+.rgba-burn-red-1 { color: rgba(255,176,170,1) }
+.rgba-burn-red-2 { color: rgba(212,114,106,1) }
+.rgba-burn-red-3 { color: rgba(128, 29, 21,1) }
+.rgba-burn-red-4 { color: rgba( 85,  6,  0,1) }
