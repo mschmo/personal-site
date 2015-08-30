@@ -14,43 +14,42 @@
   <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/screen.css') }}">
 
 </head>
-<body>
-<h1 class="title">SCHMO DASH</h1>
+<body class="overlay">
 
-<div id="weather"></div>
+  <div id="weather"></div>
 
-<script>
+  <script>
+  $(document).ready(function() {
+    $.simpleWeather({
+      location: 'Philadelphia, PA',
+      woeid: '',
+      unit: 'f',
+      success: function(weather) {
+        html = '<h2><i class="icon-'+weather.code+'"></i> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
+        html += '<h4>'+weather.city+', '+weather.region+'</h4>';
+        $("#weather").html(html);
+      },
+      error: function(error) {
+        $("#weather").html('<p>'+error+'</p>');
+      }
+    });
 
-$(document).ready(function() {
-  $.simpleWeather({
-    location: 'Philadelphia, PA',
-    woeid: '',
-    unit: 'f',
-    success: function(weather) {
-      html = '<h2><i class="icon-'+weather.code+'"></i> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
-      html += '<h4>'+weather.city+', '+weather.region+'</h4>';
-      $("#weather").html(html);
-    },
-    error: function(error) {
-      $("#weather").html('<p>'+error+'</p>');
-    }
+    $('body').vegas({
+      delay: 7000,
+      timer: false,
+      shuffle: true,
+      //transition: 'blur', TODO: too much for midori CPU right now
+      transitionDuration: 2000,
+      //animation: 'random', TODO: Get this to render more fluidly on rasp pi midori
+      overlay: "{{ url_for('admin.static', filename='css/vegas/overlays/05.png') }}",
+      slides: [
+        { src: "https://scontent-iad3-1.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/11850302_827824140665590_1103477062_n.jpg" },
+        { src: "https://igcdn-photos-d-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/e35/11909168_1032277116791003_1403552689_n.jpg" },
+        { src: "https://scontent-iad3-1.cdninstagram.com/hphotos-xaf1/t51.2885-15/e35/11330724_433483533516446_1019860252_n.jpg" },
+        { src: "https://igcdn-photos-h-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/e35/11336280_296128413890951_928225980_n.jpg" }
+      ]
+    });
   });
+  </script>
 
-  $('body').vegas({
-    delay: 7000,
-    timer: false,
-    shuffle: true,
-    transition: 'blur',
-    transitionDuration: 2000,
-    //animation: 'random', TODO: Get this to render more fluidly on rasp pi midori
-    overlay: "{{ url_for('admin.static', filename='css/vegas/overlays/05.png') }}",
-    slides: [
-      { src: "https://scontent-iad3-1.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/11850302_827824140665590_1103477062_n.jpg" },
-      { src: "https://igcdn-photos-d-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/e35/11909168_1032277116791003_1403552689_n.jpg" },
-      { src: "https://scontent-iad3-1.cdninstagram.com/hphotos-xaf1/t51.2885-15/e35/11330724_433483533516446_1019860252_n.jpg" },
-      { src: "https://igcdn-photos-h-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/e35/11336280_296128413890951_928225980_n.jpg" }
-    ]
-  });
-});
-</script>
 </body>
