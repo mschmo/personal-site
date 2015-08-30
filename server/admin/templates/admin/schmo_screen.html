@@ -38,8 +38,8 @@
       delay: 7000,
       timer: false,
       shuffle: true,
-      //transition: 'blur', TODO: too much for midori CPU right now
-      transitionDuration: 2000,
+      transition: null, // TODO: too much for midori CPU right now
+      // transitionDuration: 2000,
       //animation: 'random', TODO: Get this to render more fluidly on rasp pi midori
       overlay: "{{ url_for('admin.static', filename='css/vegas/overlays/05.png') }}",
       slides: [
