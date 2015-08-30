@@ -11,7 +11,7 @@ def get_instagram_feed(app):
         'client_id': app.config['INSTAGRAM_CLIENT_ID'],
         'count': 10
     }
-    response = json.loads(requests.get('https://api.instagram.com/v1/users/479678123/media/recent', params=params).text)
+    response = json.loads(requests.get('https://api.instagram.com/v1/users/219073714/media/recent', params=params).text)
     return [media['images']['standard_resolution']['url'] for media in response['data']]
 
 @admin.route('/')
