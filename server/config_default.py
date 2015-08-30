@@ -2,3 +2,8 @@ DEBUG = True
 TESTING = True
 FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.md'
+
+# Configs to be overwritten locally
+MAILGUN_API_KEY = ''
+MAILGUN_MESSAGE_URL = ''
+INSTAGRAM_CLIENT_ID = ''

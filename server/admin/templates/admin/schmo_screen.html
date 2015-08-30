@@ -43,10 +43,9 @@
       //animation: 'random', TODO: Get this to render more fluidly on rasp pi midori
       overlay: "{{ url_for('admin.static', filename='css/vegas/overlays/05.png') }}",
       slides: [
-        { src: "https://scontent-iad3-1.cdninstagram.com/hphotos-xfa1/t51.2885-15/e35/11850302_827824140665590_1103477062_n.jpg" },
-        { src: "https://igcdn-photos-d-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/e35/11909168_1032277116791003_1403552689_n.jpg" },
-        { src: "https://scontent-iad3-1.cdninstagram.com/hphotos-xaf1/t51.2885-15/e35/11330724_433483533516446_1019860252_n.jpg" },
-        { src: "https://igcdn-photos-h-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/e35/11336280_296128413890951_928225980_n.jpg" }
+        {% for slide in slides %}
+          {'src': '{{ slide }}' },
+        {% endfor %}
       ]
     });
   });
