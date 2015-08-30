@@ -25,45 +25,51 @@
 
   <script>
 
-  function displayTime() {
-      var time = moment().format('h:mm a [<div class="date">]MMM Do YY[</div>]');
-      $('#clock').html(time);
-      setTimeout(displayTime, 1000);
-  }
+    function displayTime() {
+        var time = moment().format('h:mm a [<div class="date">]MMM Do YY[</div>]');
+        $('#clock').html(time);
+        setTimeout(displayTime, 1000);
+    }
 
-  $(document).ready(function() {
+    function getWeather() {
+      $.simpleWeather({
+        location: 'Philadelphia, PA',
+        woeid: '',
+        unit: 'f',
+        success: function(weather) {
+          html = '<h2><i class="icon-'+weather.code+'"></i> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
+          html += '<h4>'+weather.city+', '+weather.region+'</h4>';
+          $("#weather").html(html);
+        },
+        error: function(error) {
+          $("#weather").html('<p>'+error+'</p>');
+        }
+      });
+    }
 
-    displayTime();
+    $(document).ready(function() {
 
-    $.simpleWeather({
-      location: 'Philadelphia, PA',
-      woeid: '',
-      unit: 'f',
-      success: function(weather) {
-        html = '<h2><i class="icon-'+weather.code+'"></i> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
-        html += '<h4>'+weather.city+', '+weather.region+'</h4>';
-        $("#weather").html(html);
-      },
-      error: function(error) {
-        $("#weather").html('<p>'+error+'</p>');
-      }
+      displayTime();
+
+      getWeather(); //Get the initial weather.
+      setInterval(getWeather, 600000); // Update every 10 minutes
+
+      $('body').vegas({
+        delay: 7000,
+        timer: false,
+        shuffle: true,
+        transition: null, // TODO: too much for midori CPU right now
+        // transitionDuration: 2000,
+        //animation: 'random', TODO: Get this to render more fluidly on rasp pi midori
+        overlay: "{{ url_for('admin.static', filename='css/vegas/overlays/05.png') }}",
+        slides: [
+          {% for slide in slides %}
+            {'src': '{{ slide }}' },
+          {% endfor %}
+        ]
+      });
+
     });
-
-    $('body').vegas({
-      delay: 7000,
-      timer: false,
-      shuffle: true,
-      transition: null, // TODO: too much for midori CPU right now
-      // transitionDuration: 2000,
-      //animation: 'random', TODO: Get this to render more fluidly on rasp pi midori
-      overlay: "{{ url_for('admin.static', filename='css/vegas/overlays/05.png') }}",
-      slides: [
-        {% for slide in slides %}
-          {'src': '{{ slide }}' },
-        {% endfor %}
-      ]
-    });
-  });
   </script>
 
 </body>

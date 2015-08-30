@@ -3,6 +3,11 @@
     src: url(../font/lightning-strike.ttf);
 }
 
+@font-face {
+    font-family: thug;
+    src: url(../font/thug.ttf);
+}
+
 .title {
 	color: #fff;
 	margin: 0 0 0 10px;
@@ -11,7 +16,7 @@
 }
 
 #weather {
-	font-family: lightning; /* Probably only temp */
+	font-family: thug;
 }
 
 /* Clock */
@@ -23,7 +28,7 @@
   text-transform: uppercase;
   margin: 0 0 50px 25px;
   color: #fff;
-  font-family: lightning;
+  font-family: thug;
   font-size: 100px;
   font-weight: normal;
   font-style: normal;
@@ -32,4 +37,5 @@
 
 .date {
 	font-size: 42px;
+	text-align: center;
 }
