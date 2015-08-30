@@ -1,0 +1,11 @@
+@font-face {
+    font-family: lightning;
+    src: url(../font/lightning-strike.ttf);
+}
+
+.title {
+	color: #fff;
+	margin: 0 0 0 10px;
+	font-size: 72px;
+	font-family: lightning;
+}
