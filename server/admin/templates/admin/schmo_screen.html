@@ -11,15 +11,30 @@
   <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/simpleweather.css') }}">
   <script src="{{ url_for('admin.static', filename='js/plugins/jquery.simpleweather.min.js') }}"></script>
 
+  <!-- Time -->
+  <script src="{{ url_for('admin.static', filename='js/plugins/moment.js') }}"></script>
+
+  <!-- My custom shit -->
   <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/screen.css') }}">
 
 </head>
 <body class="overlay">
 
+  <div id="clock"></div>
   <div id="weather"></div>
 
   <script>
+
+  function displayTime() {
+      var time = moment().format('h:mm a [<div class="date">]MMM Do YY[</div>]');
+      $('#clock').html(time);
+      setTimeout(displayTime, 1000);
+  }
+
   $(document).ready(function() {
+
+    displayTime();
+
     $.simpleWeather({
       location: 'Philadelphia, PA',
       woeid: '',
