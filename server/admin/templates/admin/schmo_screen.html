@@ -7,10 +7,32 @@
   <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/vegas/vegas.min.css') }}">
   <script src= "{{ url_for('admin.static', filename='js/vegas/vegas.min.js') }}"></script>
 
+  <!-- Weather API -->
+  <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/simpleweather.css') }}">
+  <script src="{{ url_for('admin.static', filename='js/plugins/jquery.simpleweather.min.js') }}"></script>
+
 </head>
 <body>
 
+<div id="weather"></div>
+
 <script>
+
+$(document).ready(function() {
+  $.simpleWeather({
+    location: 'Philadelphia, PA',
+    woeid: '',
+    unit: 'f',
+    success: function(weather) {
+      html = '<h2><i class="icon-'+weather.code+'"></i> '+weather.temp+'&deg;'+weather.units.temp+'</h2>';
+      html += '<h4>'+weather.city+', '+weather.region+'</h4>';
+      $("#weather").html(html);
+    },
+    error: function(error) {
+      $("#weather").html('<p>'+error+'</p>');
+    }
+  });
+
   $('body').vegas({
     delay: 7000,
     timer: false,
@@ -26,5 +48,6 @@
       { src: "https://igcdn-photos-h-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/e35/11336280_296128413890951_928225980_n.jpg" }
     ]
   });
+});
 </script>
 </body>
