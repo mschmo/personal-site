@@ -1,5 +1,6 @@
 import json
 import requests
+import xml.etree.ElementTree as ET
 from flask import Blueprint, render_template, current_app, jsonify
 
 
@@ -21,4 +22,10 @@ def index():
 @admin.route('/screen')
 def schmo_screen():
     slides = get_instagram_feed(current_app)
-    return render_template('admin/schmo_screen.html', slides=slides)
+    headlines = get_news_headlines()
+    return render_template('admin/schmo_screen.html', slides=slides, headlines=headlines)
+
+
+def get_news_headlines():
+    feed = ET.fromstring(requests.get('http://feeds.reuters.com/reuters/topNews?format=xml').text.encode('utf-8'))
+    return [title.text for title in feed.iter('title')][2:]

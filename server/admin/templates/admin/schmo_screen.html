@@ -14,6 +14,10 @@
   <!-- Time -->
   <script src="{{ url_for('admin.static', filename='js/plugins/moment.js') }}"></script>
 
+  <!-- News ticker -->
+  <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/liscroller.css') }}">
+  <script src="{{ url_for('admin.static', filename='js/plugins/jquery.liscroller.js') }}"></script>
+
   <!-- My custom shit -->
   <link rel="stylesheet" href="{{ url_for('admin.static', filename='css/screen.css') }}">
 
@@ -23,6 +27,14 @@
   <div id="clock"></div>
   <div id="weather"></div>
 
+
+  <footer class="headlines">
+    <ul id="headline-ticker">
+      {% for headline in headlines %}
+        <li>.. {{ headline }} ..</li>
+      {% endfor %}
+    </ul>
+  </footer>
   <script>
 
     function displayTime() {
@@ -53,6 +65,8 @@
 
       getWeather(); //Get the initial weather.
       setInterval(getWeather, 600000); // Update every 10 minutes
+
+      $("ul#headline-ticker").liScroll();
 
       $('body').vegas({
         delay: 7000,
