@@ -3,3 +3,4 @@ env
 server/build
 fabfile.py
 config.cfg
+.DS_Store
