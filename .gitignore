@@ -4,3 +4,4 @@ server/build
 fabfile.py
 config.cfg
 .DS_Store
+server/config_local.py

@@ -7,7 +7,7 @@ from werkzeug.contrib.atom import AtomFeed
 
 app = Flask(__name__)
 app.config.from_pyfile('config_default.py')
-app.config.from_envvar('SCHMOYER_SETTINGS')
+app.config.from_pyfile('config_local.py')
 pages = FlatPages(app)
 
 
