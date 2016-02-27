@@ -5,19 +5,17 @@ from flask import Flask, render_template, request
 from flask_flatpages import FlatPages
 from werkzeug.contrib.atom import AtomFeed
 
-from server.admin import admin
-
 
 app = Flask(__name__)
 app.config.from_pyfile('config_default.py')
 app.config.from_envvar('SCHMOYER_SETTINGS')
-app.register_blueprint(admin)
 pages = FlatPages(app)
 
 
 @app.route('/')
 def index():
     return render_template('index.html', posts=_get_articles_by_date())
+
 
 @app.route('/send_message/', methods=['POST'])
 def send_message():
@@ -34,6 +32,7 @@ def send_message():
         })
     return json.dumps({'success': response.text})
 
+
 @app.route('/feed.atom/')
 def feed():
     feed = AtomFeed('Recent Articles', feed_url=request.url, url=request.url_root)
@@ -46,18 +45,17 @@ def feed():
                 published=article['date'])
     return feed.get_response()
 
+
 @app.route('/<path:path>/')
 def post(path):
     post = pages.get_or_404(path)
     return render_template('post.html', post=post)
 
+
 @app.route('/projects/crypto_presentation')
 def crypto_presentation():
     return render_template('projects/crypto_presentation.html')
 
-@app.route('/admin')
-def admin():
-    return 'Schmo Dash'
 
 def _get_articles_by_date():
     return sorted(pages, reverse=True, key=lambda p: p.meta['date'])
