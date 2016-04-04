@@ -22,11 +22,13 @@
   <link rel="stylesheet" href="/static/Skeleton/stylesheets/skeleton.css">
   <link rel="stylesheet" href="/static/Skeleton/stylesheets/layout.css">
   <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="/static/css/prism.css">
   <link rel="stylesheet" href="/static/css/main.css">
 
   <!-- Javascript
   ================================================== -->
   <script src="/static/js/jquery-1.10.2.min.js"></script>
+  <script src="/static/js/prism.min.js"></script>
   <script type="text/javascript" src="/static/js/main.js"></script>
 
   <!--[if lt IE 9]>
@@ -35,7 +37,7 @@
 
   <!-- Favicons
   ================================================== -->
-  <link rel="shortcut icon" href="/static/Skeleton/images/favicon.ico">
+  <link rel="shortcut icon" href="/static/img/favicon.ico">
   <link rel="apple-touch-icon" href="/static/Skeleton/images/apple-touch-icon.png">
   <link rel="apple-touch-icon" sizes="72x72" href="/static/Skeleton/images/apple-touch-icon-72x72.png">
   <link rel="apple-touch-icon" sizes="114x114" href="/static/Skeleton/images/apple-touch-icon-114x114.png">
@@ -53,68 +55,86 @@
             </div>
         </span>
       </a>
-
-          <div id="nav_top" class="nine columns clearfix">
-            <div class="three columns alpha">
-              <h4><a id="tab_blog" class="active" href="#">Blog</a></h4>
-            </div>
-            <div class="three columns">
-              <h4><a id="tab_portfolio" href="#">Portfolio</a></h4>
-            </div>
-            <div class="three columns omega">
-              <h4><a id="tab_contact" href="#">Contact</a></h4>
-            </div>
+        <div id="nav_top" class="nine columns clearfix">
+          <div class="three columns alpha">
+            <h4><a id="tab_blog" href="/#blog">Blog</a></h4>
           </div>
-
+          <div class="three columns">
+            <h4><a id="tab_portfolio" href="/#portfolio">Portfolio</a></h4>
+          </div>
+          <div class="three columns omega">
+            <h4><a id="tab_contact" href="/#contact">Contact</a></h4>
+          </div>
+        </div>
       </div>
       <hr />
     </div>
-
+    
     <div class="five columns">
-      <p>Hey there! How are you? My name is Matt. I'm a junior software engineer at <a href="http://50onred.com" target="blank">50onRed</a> in Philadelphia.</p>
-      <p>I put up this site so that I could share my personal thoughts with the internet.</p>
+      <p>Hey there! How are you? My name is Matt. I'm a software engineer at <a href="http://50onred.com" target="blank">50onRed</a> in Philadelphia.</p>
+      <p>I put up this site so that I could share my personal thoughts with my Mom.</p>
+      <p>The posts that I intend to write here will typically involve some kind of data analysis on various subjects. My main areas of interest include biology, music, sports and whiskey.</p>
       <hr class="small">
       <div id="social">
-        <a class="icon" href="https://twitter.com/mattyschmo" title="Twitter">
-          <i class="icon-twitter"></i>
-        </a>
-        <a class="icon" href="http://instagram.com/mattyschmo" title="Instagram">
-          <i class="icon-instagram"></i>
-        </a>
-        <a class="icon" href="https://www.facebook.com/matthew.schmoyer.1" title="Facebook">
-          <i class="icon-facebook-sign"></i>
-        </a>
-        <a class="icon" href="http://www.linkedin.com/pub/matthew-schmoyer/65/47/b62" title="Linkedin">
-          <i class="icon-linkedin"></i>
-        </a>
         <a class="icon" href="https://github.com/mschmo" title="Github">
           <i class="icon-github"></i>
+        </a>
+        <a class="icon" href="https://www.linkedin.com/in/matthew-schmoyer-b6204765" title="LinkedIn">
+          <i class="icon-linkedin"></i>
         </a>
         <a class="icon" href="mailto:mattschmo@gmail.com?subject=Hello" title="E-Mail">
           <i class="icon-envelope"></i>
         </a>
-        <a class="icon" href="#" title="Subscribe (Atom)">
+        <a class="icon" href="/feed.atom/" title="Subscribe (Atom)">
           <i class="icon-rss"></i>
         </a>
       </div>
     </div>
 
     <div id="main_content" class="eleven columns">
+
       <div name="blog" id="tab_body_blog">
-        <h3>Posts</h3>
-
-          <a href="/hello-world/">Hello World</a>
-
-          <a href="/kanye-west-lyrical-analysis-through-time/">Kanye West Lyrical Analysis Through Time</a>
-
+        
+          <span>
+            <h4 style="display:inline"><a href="/lyrical-analysis-of-kanye-west/">Lyrical Analysis of Kanye West</a></h4>
+            <em style="display:inline;float:right">2015-01-11</em>
+          </span>
+          <br /><br />
+        
       </div>
+
       <div name="portfolio" id="tab_body_portfolio" class="none">
-        <h3>This is where my projects will go!</h3>
+        <h4><a href="http://www.foodunderground.net/" target="blank">Food Underground</a></h4>
+        <p>This is a static website built for a plated dinner catering company called Food Underground. It is hosted on Amazon S3 using CloudFront for content delivery. The design was built on Bootstrap.</p>
+        <h4><a href="http://www.youfoosyoulose.com/" target="blank">You Foos You Lose</a></h4>
+        <p>You Foos You Lose is a table football league statistics and analytics tool. It's built on Rails and hosted with AWS EC2.</p>
+        <h4><a href="http://www.2929beers.com/" target="blank">2929 Beers</a></h4>
+        <p>Finding the right beer for your fridge can be difficult with the countless options out there. This web application built with Flask helps users vote on beers.</p>
+        <h4><a href="/projects/crypto_presentation" target="blank">Cryptography Slide Show</a></h4>
+        <p>Using the sleek animation of reveal.js, this brief slide show presentation outlines an intro to the wild world of cryptography.</p>
       </div>
+
       <div name="contact" id="tab_body_contact" class="none">
-        <h3>Holla at me.</h3>
-        <p>You can always send me an email at mattschmo@gmail.com</p>
+
+        <div id="holla-at-me">
+          <h3>Holla At Me</h3>
+          <p>You can send me a message with the form below or email me at <a href="mailto:mattschmo@gmail.com?subject=Hello">mattschmo@gmail.com</a>.</p>
+          <form id="send-message">
+            <label for="email-input">Email</label>
+            <input id="email-input" type="text" name="sender" placeholder="So I can holla back">
+             <label for="message-input">Message</label>
+             <textarea id="message-input" name="message" rows="4" cols="150">Tell or ask me whatever you want...</textarea>
+            <input type="submit" value="Send">
+          </form>
+        </div>
+
+        <div id="thanks-for-the-holla" class="none">
+          <h4>Thanks for the message!</h4>
+          <p>I will get back to you as soon as possible. If you want, you can send another message <a id="send-again" href="">here</a>.</p>
+        </div>
+
       </div>
+
     </div>
 
 
@@ -122,4 +142,18 @@
 
   <br />
 </body>
+
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-57191221-2', 'auto');
+    ga('send', 'pageview');
+
+  </script>
+
+
 </html>

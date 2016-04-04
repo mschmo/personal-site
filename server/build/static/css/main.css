@@ -29,7 +29,7 @@ a, a:visited {
     font-weight: bold;
     text-decoration: none;
 }
-a:hover, a:focus {color:#003050;}
+a:hover, a:focus { color:#003050; }
 a.under_line:hover, a.under_line:focus {
     text-decoration: underline;
 }
@@ -47,7 +47,6 @@ a.active:hover {
     z-index: 1;
 }
 
-
 /* misc */
 hr.small {
     margin: 10px 0 10px;
@@ -59,5 +58,5 @@ hr.small {
 }
 
 @media only screen and (max-width: 767px) {
-    #nav_top {margin-left: 0;}
+    #nav_top { margin-left: 0; }
 }
