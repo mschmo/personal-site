@@ -1,6 +1,6 @@
 /* Color theme */
 .dark_blue  { color: #2C3E50; }
-.red        { color: #FA4248; }
+.red        { color: #e65559; }
 .gray       { color: #D7DADB; }
 .light_blue { color: #6DBCDB; }
 
@@ -29,7 +29,9 @@ a, a:visited {
     font-weight: bold;
     text-decoration: none;
 }
-a:hover, a:focus { color:#003050; }
+a:hover, a:focus {
+    color:#003050;
+}
 a.under_line:hover, a.under_line:focus {
     text-decoration: underline;
 }
@@ -58,5 +60,11 @@ hr.small {
 }
 
 @media only screen and (max-width: 767px) {
-    #nav_top { margin-left: 0; }
+    #nav_top, #social {
+        display: none;
+    }
+
+    #header, #tab_body_blog {
+        text-align: center;
+    }
 }

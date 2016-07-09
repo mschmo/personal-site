@@ -1,5 +1,6 @@
 title: Lyrical Analysis of Kanye West
 date: 2015-01-11
+date_clean: July 9th, 2016
 tags: [music, analysis, kanye west, python, requests, beautifulsoup]
 
 <div class="markdown-center">
