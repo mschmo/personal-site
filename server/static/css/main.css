@@ -59,6 +59,11 @@ hr.small {
     font-size: 20px;
 }
 
+.post-list-date {
+    display: inline;
+    float: right;
+}
+
 @media only screen and (max-width: 767px) {
     #nav_top, #social {
         display: none;
@@ -66,5 +71,9 @@ hr.small {
 
     #header, #tab_body_blog {
         text-align: center;
+    }
+
+    .post-list-date {
+        float: inherit;
     }
 }
