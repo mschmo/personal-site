@@ -1,13 +1,27 @@
 /* Color theme */
-.dark_blue  { color: #2C3E50; }
-.red        { color: #e65559; }
-.gray       { color: #D7DADB; }
-.light_blue { color: #6DBCDB; }
+.dark_blue  {
+    color: #2C3E50;
+}
+.red {
+    color: #e65559;
+}
+.gray {
+    color: #D7DADB;
+}
+.light_blue {
+    color: #6DBCDB;
+}
 
+/* Helpers */
 .row {
     margin-bottom: 0;
 }
 
+.none {
+    display: none;
+}
+
+/* Base */
 #schmoyer_header {
     margin-left: 0;
 }
@@ -17,10 +31,6 @@
     top: 10px;
     text-align: center;
     margin-left: 175px;
-}
-
-.none {
-    display: none;
 }
 
 /* Links */
@@ -47,6 +57,27 @@ a.active:hover {
     top:0;
     left: 0;
     z-index: 1;
+}
+
+/* Light Switch */
+body.dark-mode {
+    color: #A5A5A5;
+    background: #252120;
+}
+h1.dark-mode, h2.dark-mode, h3.dark-mode, h4.dark-mode, h5.dark-mode, h6.dark-mode {
+    color: #e6e6e6;
+}
+a.dark-mode, a.dark-mode:visited {
+    color: #4198ef;
+}
+#toggle-light.light-on {
+    color: #e65559;
+}
+a.dark-mode.active {
+    color: #6DBCDB;
+}
+a.dark-mode.active:hover {
+    cursor: default;
 }
 
 /* misc */

@@ -1,19 +1,6 @@
-function switchLights(direction) {
-    var $headers = $('h1, h2, h3, h4, h5, h6');
-    if (direction === 'on') {
-        $('body').css('background', '#fff').css('color', '#444');
-        $headers.not(".dont-toggle").css('color', '#181818');
-        $('a').not('.active').css('color', '#2C3E50');
-    } else if (direction === 'off') {
-        $('body').css('background', '#252120').css('color', '#a5a5a5');
-        $headers.not(".dont-toggle").css('color', '#e6e6e6');
-        $('a').not('.active').css('color', '#4198ef');
-        $('#toggle-light').css('color', '#e65559');
-    }
-}
-
 $(document).ready(function() {
 
+    /* Contact */
     $('#send-message').submit(function(e) {
         e.preventDefault();
         $.post('/send_message/', $(this).serialize()).done(function(data) {
@@ -28,6 +15,7 @@ $(document).ready(function() {
         $('#holla-at-me').fadeIn('slow');
     });
 
+    /* Main page tabs */
     function tab_click(tab) {
         if (tab.hasClass('active'))
             return false;
@@ -37,7 +25,6 @@ $(document).ready(function() {
     }
 
     function change_tab(tab, body) {
-        console.log(tab);
         tab_click(tab);
         $(body).fadeIn('slow');
     }
@@ -62,17 +49,23 @@ $(document).ready(function() {
     }
 
 
-    var schmo_lights = sessionStorage.getItem('schmoLights') || 'on';
-    switchLights(schmo_lights);
+    /* Toggle background theme */
+    function switchLights() {
+        $('body').toggleClass('dark-mode');
+        $('h1, h2, h3, h4, h5, h6').not(".dont-toggle").toggleClass('dark-mode');
+        $('a').toggleClass('dark-mode');
+        $('#toggle-light').toggleClass('light-on');
+    }
+
+    var darkMode = sessionStorage.getItem('schmoDarkMode') || 'off';
+    if (darkMode === 'on') {
+        switchLights();
+    }
     $('#toggle-light').on('click', function(e) {
-        if (schmo_lights === 'on') {
-            schmo_lights = 'off';
-        } else if (schmo_lights === 'off') {
-            schmo_lights = 'on';
-        }
-        sessionStorage.setItem('schmoLights', schmo_lights);
-        switchLights(schmo_lights);
+        sessionStorage.setItem('schmoDarkMode', darkMode === 'off' ? 'on' : 'off');
+        switchLights();
         return false;
     });
 
 });
+
