@@ -1,885 +1,546 @@
-var docwidth, docheight;
-var disc_width, disc_height;
-var dimensions = [7, 6];
-var board;
-var red_turn_global;
-var global_ROOT;
-var expansion_const = 2.5;
-var ai_turn = false;
-var monte_carlo_trials = 10000;
-var over;
-var ponder = true, pondering;
-var certainty_threshold = 0.15;
-var position;
-var ai_stopped = false;
-var smart_simulation = true;
-var increasing_factor = 1.07;
+/* Connect Four HTML5 with canvas
+   AI using Monte Carlo tree search
+   https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
+*/
 
-var boardui = document.getElementById("board");
-var brush = boardui.getContext("2d");
-var num_choose1, num_choose2, num_choose3, lnc1, lnc2, lnc3, stop_choose;
+var Display = (function() {
+    /* Draw UI */
+    var canvas, context;
+    var isRendered = false;
+    var pieceColors = {
+        0: '#FFFFFF',
+        1: '#FF6B6B',
+        2: '#FFE66D',
+        hover: '#4ECDC4'
+    };
+    var boardColor = "#1A535C";
+    var discRadius = 25;
 
-$(document).ready(function() {
-  docwidth = $('#post').outerWidth(true) - 50;
-  docheight =  400;
-  
-  $('#board').width(docwidth).height(docheight);
-  boardui.setAttribute('width', docwidth);
-  boardui.setAttribute('height', docheight);
-  new_game();
-});
-
-$(window).resize(function() {
-  docwidth = $('#post').outerWidth(true) - 50;
-  $('#board').width(docwidth);
-});
-
-function start_ponder() {
-  pondering = setInterval(function() {
-    if (!global_ROOT)
-      global_ROOT = create_MCTS_root();
-    var start_time = new Date().getTime();
-    var temp_count = 0;
-    while ((new Date().getTime() - start_time) < 30 && !stop_choose) {
-      global_ROOT.choose_child();
-      temp_count++;
+    function _drawMask() {
+        // TODO: squeeze and larger slots
+        // http://stackoverflow.com/questions/6271419/how-to-fill-the-opposite-shape-on-canvas
+        // -->  http://stackoverflow.com/a/11770000/917957
+        context.save();
+        context.fillStyle = boardColor;
+        context.beginPath();
+        var x, y;
+        for (y = 0; y < 6; y++) {
+            for (x = 0; x < 7; x++) {
+                context.arc(_columnPosition(x), _rowPosition(y), discRadius, 0, 2 * Math.PI);
+                context.rect(75 * x + 150, 75 * y, -100, 100);
+            }
+        }
+        context.fill();
+        context.restore();
     }
-    if (num_choose3 && (temp_count < num_choose3 / 10 || temp_count < num_choose2 / 10 || temp_count < num_choose1 / 10))
-      stop_choose = true;
-    else {
-      num_choose3 = num_choose2;
-      num_choose2 = num_choose1;
-      num_choose1 = temp_count;
+
+    function drawPiece(x, y, player, animation) {
+        animation = typeof animation !== 'undefined';
+        x = _columnPosition(x);
+        y = animation ? y + 50 : _rowPosition(y);
+        context.save();
+        context.fillStyle = pieceColors[player];
+        context.strokeStyle = 'black';
+        context.beginPath();
+        context.arc(x, y, discRadius, 0, 2 * Math.PI, false);
+        context.fill();
+        context.restore();
     }
-    update_analysis();
-  }, 1);
-}
 
-function stop_ponder() {
-  clearInterval(pondering);
-}
-
-function update_analysis() {
-  var range = get_MCTS_depth_range();
-  $('#anal').text("Analysis: Depth-" + range[1] + " Result-" + range[2] + " Certainty-" + (global_ROOT && global_ROOT.total_tries > 0 ? (result_certainty(global_ROOT) * 100).toFixed(0):"0") + "%");
-  $('#num-trials').text("Trials: " + global_ROOT.total_tries);
-}
-
-function result_certainty(root) {
-  if (root.total_tries > (root.hits + root.misses) * 2)
-    return 1 - (root.hits + root.misses) / root.total_tries;
-  else if (root.hits > root.misses)
-    return (root.hits - root.misses) / root.total_tries;
-  else if (root.hits < root.misses)
-    return (root.misses - root.hits) / root.total_tries;
-  else return 1 - (root.hits + root.misses) / root.total_tries;
-}
-
-function new_game() {
-  disc_width = docwidth / (dimensions[0] + 1);
-  disc_height = docheight / (dimensions[1] + 1);
-  over = -1;
-  board = new Array(dimensions[0]);
-  for (var i = 0; i < board.length; i++) {
-    board[i] = new Array(dimensions[1]);
-    for (var a = 0; a < board[i].length; a++)
-      board[i][a] = 0;
-  }
-  
-  red_turn_global = true;
-  num_choose1 = num_choose2 = num_choose3 = lnc1 = lnc2 = lnc3 = stop_choose = false;
-  position = "";
-  global_ROOT = create_MCTS_root();
-  draw_board();
-  
-  if (ai_turn == red_turn_global || ai_turn == 'both')
-    setTimeout(play_ai_move, 20);
-  
-  stop_ponder();
-  if (ponder)
-    start_ponder();
-}
-
-function setup_board(pos) {
-  var b = new Array(dimensions[0]);
-  var i, a, col;
-  for (i = 0; i < dimensions[0]; i++) {
-    b[i] = new Array(dimensions[1]);
-    for (a = 0; a < dimensions[1]; a++)
-      b[i][a] = 0;
-  }
-  for (i = 0; i < pos.length; i++) {
-    col = parseInt(pos.charAt(i), 10) - 1;
-    for (a = dimensions[1] - 1; a >= 0; a--)
-      if (b[col][a] === 0) {
-        b[col][a] = i % 2 === 0 ? 1:2;
-        break;
-      }
-  }
-  return b;
-}
-
-function drawEllipse(x, y, w, h) {
-  var kappa = 0.5522848,
-      ox = (w / 2) * kappa, // control point offset horizontal
-      oy = (h / 2) * kappa, // control point offset vertical
-      xe = x + w,           // x-end
-      ye = y + h,           // y-end
-      xm = x + w / 2,       // x-middle
-      ym = y + h / 2;       // y-middle
-
-  brush.moveTo(x, ym);
-  brush.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-  brush.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-  brush.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-  brush.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-}
-
-function clear_board() {
-  brush.clearRect(0, 0, docwidth, docheight);
-}
-
-function draw_grid() {
-  brush.lineWidth = 2;
-  brush.strokeStyle = "black";
-  
-  brush.beginPath();
-  for (var i = disc_width / 2; i < docwidth; i += disc_width) {
-    brush.moveTo(i, disc_height / 2);
-    brush.lineTo(i, docheight - disc_height / 2);
-  }
-  for (var a = 3 * disc_height / 2; a < docheight; a += disc_height) {
-    brush.moveTo(disc_width / 2, a);
-    brush.lineTo(docwidth - disc_width / 2, a);
-  }
-  brush.stroke();
-  brush.closePath();
-}
-
-function draw_piece(x, y) {
-  switch (board[x][y]) {
-    case 1:
-      brush.fillStyle = "red";
-      break;
-    case 2:
-      brush.fillStyle = "yellow";
-      break;
-    default: return;
-  }
-  brush.beginPath();
-  drawEllipse(x * disc_width + disc_width / 2, y * disc_height + disc_height / 2, disc_width, disc_height);
-  brush.fill();
-  brush.closePath();
-}
-
-function draw_board() {
-  clear_board();
-  update_analysis();
-  
-  for (var i = 0; i < board.length; i++)
-    for (var a = 0; a < board[i].length; a++)
-      if (board[i][a] !== 0)
-        draw_piece(i, a);
-  
-  draw_grid();
-}
-
-function draw_hover(col) {
-  var color = red_turn_global ? 1:2;
-  draw_board();
-  switch (color) {
-    case 1:
-      brush.fillStyle = "red";
-      break;
-    case 2:
-      brush.fillStyle = "yellow";
-      break;
-    default: return;
-  }
-  brush.beginPath();
-  drawEllipse(col * disc_width + disc_width / 2, 0, disc_width, disc_height);
-  brush.fill();
-  brush.closePath();
-}
-
-function get_col(xloc, yloc) {
-  if (xloc > docwidth - disc_width / 2 || xloc < disc_width / 2)
-    return -1;
-  else if (yloc > docheight - disc_height / 2)
-    return -2;
-  return Math.floor((xloc - disc_width / 2) / disc_width);
-}
-
-function legal_move(tboard, col, output) {
-  if (col == -2)
-    return false;
-  if (col < 0) {
-    if (output)
-      alert("Please press on the board!");
-    return false;
-  }
-  if (tboard[col][0] !== 0) {
-    if (output)
-      alert("Column already full!");
-    return false;
-  }
-  return true;
-}
-
-function set_turn(turn, col, row) {
-  
-  position += col + 1;
-  
-  red_turn_global = turn;
-  
-  global_ROOT = MCTS_get_next_root(col);
-  if (global_ROOT)
-    global_ROOT.parent = null;
-  else global_ROOT = create_MCTS_root();
-  
-  var mtc = most_tried_child(global_ROOT, null);
-  
-  if (over == -1 && (turn === ai_turn || ai_turn == "both") && mtc && mtc.last_move)
-    draw_hover(mtc.last_move);
-  else  draw_board();
-  
-  over = game_over(board, col, row);
-  if (over != -1) {
-    switch (over) {
-      case 0:
-        alert("Game tied!");
-        break;
-      case 1:
-        alert("Red wins!");
-        break;
-      case 2:
-        alert ("Yellow wins!");
-        break;
+    function render(canvasBoard) {
+        canvas = canvasBoard;
+        context = canvas.getContext('2d');
+        clear();
+        _drawMask();
+        isRendered = true;
     }
-    stop_ponder();
-  }
-  
-  monte_carlo_trials *= increasing_factor;
-  num_choose1 = num_choose2 = num_choose3 = stop_choose = false;
-  
-  if (over == -1 && (turn === ai_turn || ai_turn == "both"))
-    setTimeout(play_ai_move, 25);
-}
 
-function play_move(tboard, col, turn) {
-  if (tboard[col][0] !== 0)
-    return -1;
-  var color = turn ? 1:2, row;
-  for (row = tboard[col].length - 1; tboard[col][row] !== 0; row--);
-  tboard[col][row] = color;
-  return row;
-}
-
-$('#board').mousedown(function (e) {
-  if (e.which === 3)
-    return;
-  if (red_turn_global == ai_turn || ai_turn == "both")
-    return;
-  if (over != -1) {
-    alert("The game is already over!");
-    return;
-  }
-  var col = get_col(e.pageX, e.pageY);
-  if (!legal_move(board, col, true))
-    return;
-  var row = play_move(board, col, red_turn_global);
-  
-  set_turn(!red_turn_global, col, row);
-});
-
-$('#board').mousemove(function (e) {
-  if (red_turn_global == ai_turn || ai_turn == "both" || over != -1)
-    return;
-  var col = get_col(e.pageX);
-  if (!legal_move(board, col, false))
-    return;
-  draw_hover(col);
-});
-
-function get_winning_move(tboard, turn) {
-  var row, color = turn ? 1:2;
-  for (var col = 0; col < tboard.length; col++) {
-    if (tboard[col][0] !== 0)
-      continue;
-    for (row = tboard[col].length - 1; tboard[col][row] !== 0; row--);
-    if (game_over_color(tboard, col, row, color) != -1)
-      return [col, row];
-  }
-  return false;
-}
-
-function MCTS_get_children(state, father) {
-  var tboard = setup_board(state.board);
-  
-  if (state.game_over)
-    return [];
-  
-  var win = get_winning_move(tboard, state.turn);
-  if (!win)
-    win = get_winning_move(tboard, !state.turn);
-  else {
-    var nstate = new State(state.board + (win[0] + 1), !state.turn);
-    nstate.game_over = true;
-    return [new MCTS_Node(nstate, father, win[0])];
-  }
-  if (win)
-    return [new MCTS_Node(new State(state.board + (win[0] + 1), !state.turn), father, win[0])];
-  
-  var col, count = 0;
-  
-  for (col = 0; col < tboard.length; col++)
-    if (tboard[col][0] === 0)
-      count++;
-
-  var children = new Array(count);
-  for (col = 0; col < tboard.length; col++)
-    if (tboard[col][0] === 0)
-      children[--count] = new MCTS_Node(new State(state.board + (col + 1), !state.turn), father, col);
-  
-  for (var i = 0; i < children.length - 1; i++)
-    for (var a = i + 1; a < children.length; a++)
-      if (identical_boards(setup_board(children[i].State.board), setup_board(children[a].State.board))) {
-        children.splice(a, 1);
-        a--;
-      }
-
-  return children;
-}
-
-function ib (b1, b2) {
-  for (var i = 0; i < b1.length; i++)
-    if (+b1.charAt(i) != +b2.charAt(i) && +b1.charAt(i) != dimensions[0] - +b2.charAt(i))
-      return false;
-  return true;
-}
-
-var MCTS_simulate;
-
-function MCTS_dumb_simulate(state) {
-  if (state.game_over)
-    return -1;
-  var tboard = setup_board(state.board);
-  
-  var last_move, turn = state.turn, done = false;
-  var row, col;
-  while (done == -1) {
-      do {
-        col = Math.random() * tboard.length | 0;
-        row = play_move(tboard, col, turn);
-      }  while (row < 0);
-    done = game_over(tboard, col, row);
-    turn = !turn;
-  }
-  
-  if (done === 0)
-    return 0;
-  return done == (state.turn ? 1:2) ? 1:-1;
-}
-
-function MCTS_simulate_smart(state) {
-  var tboard = setup_board(state.board);
-  
-  var last_move, turn = state.turn, done = game_over_full(tboard);
-  var row, col;
-  while (done == -1) {
-    last_move = get_winning_move(tboard, turn);
-    if (!last_move)
-      last_move = get_winning_move(tboard, !turn);
-    if (!last_move)
-      do {
-        col = Math.random() * tboard.length | 0;
-        row = play_move(tboard, col, turn);
-      }  while (row < 0);
-    else {
-      tboard[last_move[0]][last_move[1]] = turn ? 1:2;
-      col = last_move[0];
-      row = last_move[1];
+    function clear() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        isRendered = false;
     }
-    done = game_over(tboard, col, row);
-    turn = !turn;
-  }
-  
-  if (done === 0)
-    return 0;
-  return done == (state.turn ? 1:2) ? 1:-1;
-}
 
-function create_MCTS_root() {
-  MCTS_simulate = smart_simulation ? MCTS_simulate_smart:MCTS_dumb_simulate;
-  return new MCTS_Node(new State(position, red_turn_global), null, null);
-}
-
-function MCTS_get_next_root(col) {
-  if (!global_ROOT || !global_ROOT.children)
-    return null;
-  for (var i = 0; i < global_ROOT.children.length; i++)
-    if (global_ROOT.children[i].last_move == col) {
-      return global_ROOT.children[i];
+    function _columnPosition(x) {
+        return 75 * x + 100;
     }
-  return null;
-}
 
-function run_MCTS(times, threshold, callback) {
-  if (!global_ROOT)
-    global_ROOT = create_MCTS_root();
-  run_MCTS_recursive(times, threshold, callback, 0);
-}
+    function _rowPosition(y) {
+        return 75 * y + 50;
+    }
 
-function run_MCTS_recursive(times, threshold, callback, count) {
-  var start_time = new Date().getTime();
-  var init_times = times;
-  while (times > 0 && (new Date().getTime() - start_time) < 100) {
-    global_ROOT.choose_child();
-    times--;
-  }
-  if (count % 20 === 0) {
-    draw_hover(most_tried_child(global_ROOT, null).last_move);
-    if (threshold > 0) {
-      var error = get_certainty(global_ROOT);
-      console.log(error);
-      if (global_ROOT.children.length < 2 || error < threshold) {
-        callback();
-        return;
+    function animate(column, player, to_row, cur_pos, map, callback) {
+        if (to_row * 75 >= cur_pos) {
+            clear();
+            draw(map);
+            drawPiece(column, cur_pos, player, true);
+            _drawMask();
+            window.requestAnimationFrame(function () {
+                animate(column, player, to_row, cur_pos + discRadius, map, callback);
+            });
+        } else {
+            callback();
+        }
+    }
+
+    function draw(map) {
+        var x, y;
+        for (y = 0; y < 6; y++) {
+            for (x = 0; x < 7; x++) {
+                drawPiece(x, y, map[y][x]);
+            }
+        }
+    }
+
+    function onColumn(coord, x) {
+        x = _columnPosition(x);
+        return (coord[0] - x) * (coord[0] - x) <= discRadius * discRadius;
+    }
+
+    function renderMessage(message) {
+        context.save();
+        context.font = '14pt sans-serif';
+        context.fillStyle = "#fff";
+        context.fillText(message, 200, 20);
+        context.restore();
+    }
+
+    return {
+        isRendered: isRendered,
+        render: render,
+        clear: clear,
+        draw: draw,
+        drawPiece: drawPiece,
+        onColumn: onColumn,
+        animate: animate,
+        renderMessage: renderMessage
+    };
+})();
+
+
+var Game = (function(board) {
+  /* Game controls. Start, get player, determine winner */
+  var canvas, ai;
+  var map = [];
+  var hoverSpot;
+  var initialized = false;
+  var gameEnded = false;
+  var turn = 1;
+  var aiTimeLimit = 1; // seconds
+
+  function _initMap() {
+    // Initialize 7x6 map
+    var i, j;
+    for (i = 0; i < 6; i++) {
+      map[i] = [];
+      for (j = 0; j < 7; j++) {
+        map[i][j] = 0;
       }
     }
   }
-  if (ai_stopped || times <= 0 || stop_choose)
-    callback();
-  else if (lnc3 && (init_times - times < lnc3 / 5 || init_times - times < lnc2 / 5 || init_times - times < lnc1 / 5)) {
-    console.log(init_times - times, lnc3);
-    callback();
-  }
-  else {
-    lnc3 = lnc2;
-    lnc2 = lnc1;
-    lnc1 = init_times - times;
-    setTimeout(function() {
-      run_MCTS_recursive(times, threshold, callback, ++count);
-    }, 1);
-  }
-}
 
-function get_certainty(root) {
-  var best_child = most_tried_child(root, null);
-  var ratio = most_tried_child(root, best_child).total_tries / best_child.total_tries;
-  var ratio_wins = best_child.hits < best_child.misses ? (best_child.hits / best_child.misses * 2):(best_child.misses / best_child.hits * 3);
-  return ratio > ratio_wins ? ratio_wins:ratio;
-}
-
-function most_tried_child(root, exclude) {
-  var most_trials = 0, child = null;
-  if (!root.children)
-    return null;
-  if (root.children.length == 1)
-    return root.children[0];
-  for (var i = 0; i < root.children.length; i++)
-    if (root.children[i] != exclude && root.children[i].total_tries > most_trials) {
-      most_trials = root.children[i].total_tries;
-      child = root.children[i];
+  function _init() {
+    if (board.isRendered && initialized) {
+      return;
     }
-  return child;
-}
-
-
-function least_tried_child(root) {
-  var least_trials = root.total_tries + 1, child = null;
-  if (!root.children)
-    return null;
-  for (var i = 0; i < root.children.length; i++)
-    if (root.children[i].total_tries < least_trials) {
-      least_trials = root.children[i].total_tries;
-      child = root.children[i];
-    }
-  return child;
-}
-
-function get_MCTS_depth_range() {
-  var root, range = new Array(3);
-  for (range[0] = -1, root = global_ROOT; root && root.children; range[0]++, root = least_tried_child(root));
-  for (range[1] = -1, root = global_ROOT; root && root.children; range[1]++, root = most_tried_child(root));
-  if (global_ROOT.total_tries > (global_ROOT.hits + global_ROOT.misses) * 3)
-    range[2] = "Tie";
-  else if ((global_ROOT.hits > global_ROOT.misses) == red_turn_global)
-    range[2] = "R";
-  else if ((global_ROOT.hits < global_ROOT.misses) == red_turn_global)
-    range[2] = "Y";
-  else range[2] = "Tie";
-  return range;
-}
-
-function get_best_move_MCTS() {
-  var best_child = most_tried_child(global_ROOT, null);
-  if (!best_child)
-    return -1;
-  return best_child.last_move;
-}
-
-function play_ai_move() {
-  ai_stopped = false;
-  if (!global_ROOT || global_ROOT.total_tries < monte_carlo_trials && certainty_threshold < 1 && !(global_ROOT.children && global_ROOT.children.length == 1))
-    run_MCTS(monte_carlo_trials - global_ROOT.total_tries, certainty_threshold, fpaim);
-  else fpaim();
-}
-
-function fpaim() {
-  var best_row = get_best_move_MCTS();
-  var best_col = play_move(board, best_row, red_turn_global);
-  set_turn(!red_turn_global, best_row, best_col);
-}
-
-function onetotwod(oned) {
-  var twod = new Array(dimensions[0]);
-  for (var i = 0; i < dimensions[0]; i++)
-    twod[i] = oned.slice(i * dimensions[1], (i + 1) * dimensions[1]);
-  return twod;
-}
-
-function twotooned(twod) {
-  var oned = new Array(dimensions[0] * dimensions[1]);
-  for (var i = 0; i < dimensions[0] * dimensions[1]; i++)
-    oned[i] = twod[i / dimensions[1] | 0][i % dimensions[1]];
-  return oned;
-}
-
-function game_over(tboard, x, y) {
-  var countConsecutive = 1;
-  var color = tboard[x][y];
-  var i, a;
-  
-  for (i = x - 1; i >= 0 && countConsecutive < 4 && tboard[i][y] == color; i--, countConsecutive++);
-  for (i = x + 1; i < tboard.length && countConsecutive < 4 && tboard[i][y] == color; i++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  countConsecutive = 1;
-  
-  for (a = y - 1; a >= 0 && countConsecutive < 4 && tboard[x][a] == color; a--, countConsecutive++);
-  for (a = y + 1; a < tboard[0].length && countConsecutive < 4 && tboard[x][a] == color; a++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  countConsecutive = 1;
-  
-  for (i = x - 1, a = y - 1; i >= 0 && a >= 0 && countConsecutive < 4 && tboard[i][a] == color; a--, i--, countConsecutive++);
-  for (i = x + 1, a = y + 1; i < tboard.length && a < tboard[0].length && countConsecutive < 4 && tboard[i][a] == color; a++, i++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  countConsecutive = 1;
-  
-  for (i = x - 1, a = y + 1; i >= 0 && a < tboard[0].length && countConsecutive < 4 && tboard[i][a] == color; a++, i--, countConsecutive++);
-  for (i = x + 1, a = y - 1; i < tboard.length && a >= 0 && countConsecutive < 4 && tboard[i][a] == color; a--, i++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  for (i = 0; i < tboard.length; i++)
-    if (tboard[i][0] === 0)
-      return -1;
-  
-  return 0;
-}
-
-function game_over_color(tboard, x, y, color) {
-  var countConsecutive = 1;
-  var i, a;
-  
-  for (i = x - 1; i >= 0 && countConsecutive < 4 && tboard[i][y] == color; i--, countConsecutive++);
-  for (i = x + 1; i < tboard.length && countConsecutive < 4 && tboard[i][y] == color; i++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  countConsecutive = 1;
-  
-  for (a = y - 1; a >= 0 && countConsecutive < 4 && tboard[x][a] == color; a--, countConsecutive++);
-  for (a = y + 1; a < tboard[0].length && countConsecutive < 4 && tboard[x][a] == color; a++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  countConsecutive = 1;
-  
-  for (i = x - 1, a = y - 1; i >= 0 && a >= 0 && countConsecutive < 4 && tboard[i][a] == color; a--, i--, countConsecutive++);
-  for (i = x + 1, a = y + 1; i < tboard.length && a < tboard[0].length && countConsecutive < 4 && tboard[i][a] == color; a++, i++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  countConsecutive = 1;
-  
-  for (i = x - 1, a = y + 1; i >= 0 && a < tboard[0].length && countConsecutive < 4 && tboard[i][a] == color; a++, i--, countConsecutive++);
-  for (i = x + 1, a = y - 1; i < tboard.length && a >= 0 && countConsecutive < 4 && tboard[i][a] == color; a--, i++, countConsecutive++);
-  
-  if (countConsecutive == 4)
-    return color;
-  
-  for (i = 0; i < tboard.length; i++)
-    if (tboard[i][0] === 0)
-      return -1;
-  
-  return 0;
-}
-
-function game_over_full(tboard) {
-  var countConsecutive = 0;
-  var color = 3;
-  var i, a;
-  
-  for (i = 0; i < tboard.length; i++) {
-    for (a = 0; a < tboard[i].length; a++)
-      if (countConsecutive < 4)
-        if (tboard[i][a] === 0)
-          color = 3;
-        else if (tboard[i][a] == color)
-          countConsecutive++;
-        else {
-          color = tboard[i][a];
-          countConsecutive = 1;
-        }
-      else if (countConsecutive == 4)
-        return color;
-    if (countConsecutive == 4)
-      return color;
-    else countConsecutive = 0;
+    _initMap();
+    canvas = document.getElementById('connect-four');
+    board.render(canvas);
+    canvas.addEventListener('click', function(e) {
+      playerClick(e);
+    });
+    canvas.addEventListener('mousemove', function(e) {
+      playerHover(e);
+    });
+    canvas.addEventListener('mouseout', function() {
+      if (hoverSpot !== undefined) {
+        board.drawPiece(hoverSpot[0], hoverSpot[1], 0);
+      }
+    });
+    // TODO: add setting for who goes first
+    initialized = true;
   }
-  if (countConsecutive == 4)
-    return color;
-    
-  countConsecutive = 0;
-  color = 3;
-  
-  for (a = 0; a < tboard[0].length; a++) {
-    for (i = 0; i < tboard.length; i++)
-      if (countConsecutive < 4)
-        if (tboard[i][a] === 0)
-          color = 3;
-        else if (tboard[i][a] == color)
-          countConsecutive++;
-        else {
-          color = tboard[i][a];
-          countConsecutive = 1;
-        }
-      else if (countConsecutive == 4)
-        return color;
-    if (countConsecutive == 4)
-      return color;
-    else countConsecutive = 0;
+
+  function _fourInRow(slice, currentDisc) {
+    return slice.every(function(element) {
+        return element === currentDisc;
+    });
   }
-  if (countConsecutive == 4)
-    return color;
-    
-  countConsecutive = 0;
-  color = 3;
-  
-  var x, y;
-  
-  for (x = 0; x < tboard.length; x++) {
-    for (i = x, a = 0; i < tboard.length && a < tboard[i].length; i++, a++)
-      if (countConsecutive < 4)
-        if (tboard[i][a] === 0)
-          color = 3;
-        else if (tboard[i][a] == color)
-          countConsecutive++;
-        else {
-          color = tboard[i][a];
-          countConsecutive = 1;
+
+  function _checkWinner(altMap) {
+    altMap = _orDefault(altMap, map);
+    var i, j, k, seq, fourRowSlice;
+    for (i = 0; i < 6; i++) {
+      for (j = 0; j < 7; j++) {
+        currentDisc = altMap[i][j];
+        if (currentDisc === 0) {
+          continue;
         }
-      else if (countConsecutive == 4)
-        return color;
-    if (countConsecutive == 4)
-      return color;
-    else countConsecutive = 0;
-  }
-  if (countConsecutive == 4)
-    return color;
-    
-  countConsecutive = 0;
-  color = 3;
-  
-  for (y = 1; y < tboard[0].length; y++) {
-    for (i = 0, a = y; i < tboard.length && a < tboard[i].length; i++, a++)
-      if (countConsecutive < 4)
-        if (tboard[i][a] === 0)
-          color = 3;
-        else if (tboard[i][a] == color)
-          countConsecutive++;
-        else {
-          color = tboard[i][a];
-          countConsecutive = 1;
-        }
-      else if (countConsecutive == 4)
-        return color;
-    if (countConsecutive == 4)
-      return color;
-    else countConsecutive = 0;
-  }
-  if (countConsecutive == 4)
-    return color;
-    
-  countConsecutive = 0;
-  color = 3;
-  
-  for (x = 0; x < tboard.length; x++) {
-    for (i = x, a = 0; i >= 0 && a < tboard[i].length; i--, a++)
-      if (countConsecutive < 4)
-        if (tboard[i][a] === 0)
-          color = 3;
-        else if (tboard[i][a] == color)
-          countConsecutive++;
-        else {
-          color = tboard[i][a];
-          countConsecutive = 1;
-        }
-      else if (countConsecutive == 4)
-        return color;
-    if (countConsecutive == 4)
-      return color;
-    else countConsecutive = 0;
-  }
-  if (countConsecutive == 4)
-    return color;
-        
-  countConsecutive = 0;
-  color = 3;
-  
-  for (y = 1; y < tboard[0].length; y++) {
-    for (i = tboard.length - 1, a = y; i >= 0 && a < tboard[i].length; i--, a++)
-      if (countConsecutive < 4)
-        if (tboard[i][a] === 0)
-          color = 3;
-        else if (tboard[i][a] == color)
-          countConsecutive++;
-        else {
-          color = tboard[i][a];
-          countConsecutive = 1;
-        }
-      else if (countConsecutive == 4)
-        return color;
-    if (countConsecutive == 4)
-      return color;
-    else countConsecutive = 0;
-  }
-  if (countConsecutive == 4)
-    return color;
-        
-  for (i = 0; i < tboard.length; i++)
-    if (tboard[i][0] === 0)
-      return -1;
-  
-  return 0;
-}
-
-function identical_boards(board1, board2) {
-  for (var i = 0; i < board1.length / 2; i++)
-    for (var a = 0; a < board1[i].length; a++)
-      if (board1[i][a] != board2[board1.length - 1 - i][a])
-        return false;
-  return true;
-}
-
-var State = function(board, turn) {
-  this.board = board;
-  this.turn = turn;
-};
-
-var MCTS_Node = function(State, parent, last_move) {
-  this.State = State;
-  this.parent = parent;
-  this.last_move = last_move;
-  this.hits = 0;
-  this.misses = 0;
-  this.total_tries = 0;
-};
-
-function MCTS_child_potential(child, t) {
-  var w = child.misses - child.hits;
-  var n = child.total_tries;
-  var c = expansion_const;
-  
-  return w / n  +  c * Math.sqrt(Math.log(t) / n);
-}
-
-MCTS_Node.prototype.choose_child = function() {
-  if (!this.children)
-    this.children = MCTS_get_children(this.State, this);
-  if (this.children.length === 0) // leaf node
-    this.run_simulation();
-  else {
-    var i;
-    var count_unexplored = 0;
-    for (i = 0; i < this.children.length; i++)
-      if (this.children[i].total_tries === 0)
-        count_unexplored++;
-
-    if (count_unexplored > 0) {
-      var ran = Math.floor(Math.random() * count_unexplored);
-      for (i = 0; i < this.children.length; i++)
-        if (this.children[i].total_tries === 0) {
-          count_unexplored--;
-          if (count_unexplored === 0) {
-            this.children[i].run_simulation();
-            return;
+        // horizontal
+        if (j + 3 < 7) {
+          seq = altMap[i].slice(j, j + 4);
+          if (_fourInRow(seq, currentDisc)) {
+            return {status: true, winnerId: currentDisc};
           }
         }
-      
-    }
-    else {
-      var best_child = this.children[0], best_potential = MCTS_child_potential(this.children[0], this.total_tries), potential;
-      for (i = 1; i < this.children.length; i++) {
-        potential = MCTS_child_potential(this.children[i], this.total_tries);
-        if (potential > best_potential) {
-          best_potential = potential;
-          best_child = this.children[i];
+        if (i + 3 >= 6) {
+          continue;
+        }
+        // vertical
+        fourRowSlice = altMap.slice(i, i + 4);
+        seq = fourRowSlice.map(function(value, index) { return value[j]; });
+        if (_fourInRow(seq, currentDisc)) {
+          return {status: true, winnerId: currentDisc};
+        }
+        // diagonals
+        if (j + 3 < 7) {
+          seq = fourRowSlice.map(function(value, index) { return value[j + index]; });
+          if (_fourInRow(seq, currentDisc)) {
+            return {status: true, winnerId: currentDisc};
+          }
+        }
+        // top-right diagonal
+        if (j - 3 >= 0) {
+          seq = fourRowSlice.map(function(value, index) { return value[j - index]; });
+          if (_fourInRow(seq, currentDisc)) {
+            return {status: true, winnerId: currentDisc};
+          }
         }
       }
-      best_child.choose_child();
+    }
+    // check if draw
+    if ((turn === 42) && (!gameEnded)) {
+      return {status: true, winnerId: 0};
+    }
+    return {status: false};
+  }
+
+  function _endGame(winner) {
+    //this.paused = true;
+    gameEnded = true;
+    //this.rejectClick = false;
+    var msg = '';
+    if (winner === 0) {
+      msg += "It's a draw";
+    } else {
+      msg += 'Player ' + winner + ' Wins';
+    }
+    msg += " - Click to Reset";
+    board.renderMessage(msg);
+  }
+
+  function startGame(opponentPlayer) {
+    if (!initialized) {
+      _init();
+    }
+    ai = opponentPlayer;
+    ai.assignMethods(_checkWinner, legalMoves, getNextState);
+    board.draw(map);
+  }
+
+  function _actionCallback() {
+    if (gameEnded) {
+      return;
+    }
+    // Pass COPY of map
+    var mapCopy = map.map(function(arr) {
+        return arr.slice();
+    });
+    var play = ai.getPlay(mapCopy, aiTimeLimit);
+    action(play, function() {
+      return;
+    });
+  }
+
+  function _isHumanTurn(playTurn) {
+    playTurn = _orDefault(playTurn, turn);
+    return playTurn % 2 !== 0;
+  }
+
+  function legalMoves(movesMap) {
+    movesMap = typeof movesMap === 'undefined' ? map : movesMap;
+    var moves = [];
+    var i;
+    for (i = 0; i < 7; i++) {
+      if (movesMap[0][i] === 0) {
+        moves.push(i);
+      }
+    }
+    return moves;
+  }
+
+  function playerClick(e) {
+    if (gameEnded) {
+        ai.clearCanvas();
+        _initMap();
+        board.render(canvas);
+        turn = 1;
+        gameEnded = false;
+        return false;
+    }
+    if (!_isHumanTurn()) {
+        return false;
+    }
+    var coord = _getCoord(e);
+    var j, valid;
+    for (j = 0; j < 7; j++) {
+      if (board.onColumn(coord, j)) {
+        // paused = false;
+        valid = action(j, _actionCallback);
+        if (valid === 1) { // give user retry if action is invalid
+            rejectClick = true;
+        }
+        board.draw(map);
+        break; //because there will be no 2 points that are clicked at a time
+      }
+    }
+    return true;
+  }
+
+  function _orDefault(option, defaultOption) {
+    return typeof option === 'undefined' ? defaultOption : option;
+  }
+
+  function _getTurnCount(altMap) {
+    altMap = _orDefault(altMap, map);
+    var sumTurn = 1;
+    for (var i = 0; i < 6; i++) {
+      sumTurn += altMap[i].reduce(function(a, b) { return a + ((b !== 0) ? 1 : 0); }, 0);
+    }
+    return sumTurn;
+  }
+
+  function getNextState(play, currState) {
+    currState = _orDefault(currState, map);
+    var row = getActionRow(play, currState);
+    var currTurn = _getTurnCount(currState);
+    currState[row][play] = _isHumanTurn(currTurn) ? 1 : 2;
+    return currState;
+  }
+
+  function getActionRow(column, altMap) {
+    altMap = _orDefault(altMap, map);
+    var row = 5, i;
+    for (i = 0; i < 5; i++) {
+      if (altMap[i + 1][column] !== 0) {
+        row = i;
+        break;
+      }
+    }
+    return row;
+  }
+
+  function action(column, callback) {
+    if (map[0][column] !== 0 || column < 0 || column > 6) {
+      return false;
+    }
+    var row = getActionRow(column);
+    board.animate(column, playerMove(), row, 0, map, function () {
+      hoverSpot = undefined;
+      map[row][column] = playerMove();
+      board.draw(map);
+      var winner = _checkWinner();
+      if (winner.status === true) {
+        _endGame(winner.winnerId);
+        return;
+      }
+      turn++;
+      callback();
+    });
+    //this.paused = true;
+    return true;
+  }
+
+  function playerMove() {
+    return _isHumanTurn() ? 1 : 2;
+  }
+
+  function _getCoord(e) {
+    var rect = canvas.getBoundingClientRect();
+    return [e.clientX - rect.left, e.clientY - rect.top];
+  }
+
+  function playerHover(e) {
+    if (!_isHumanTurn()) {
+      return false;
+    }
+    var coord = _getCoord(e);
+    var j, valid;
+    for (j = 0; j < 7; j++) {
+      if (board.onColumn(coord, j)) {
+        // now color the bottom circle in that row if applicable
+        for (var i = 5; i >= 0; i--) {
+          if (map[i][j] === 0) {
+            if (hoverSpot!== undefined && (hoverSpot[0] !== j || hoverSpot[1] !== i)) {
+              board.drawPiece(hoverSpot[0], hoverSpot[1], 0);
+            }
+            hoverSpot = [j, i];
+            board.drawPiece(j, i, 'hover');
+            break;
+          }
+        }
+      }
     }
   }
-};
 
-MCTS_Node.prototype.run_simulation = function() {
-  this.back_propogate(MCTS_simulate(this.State));
-};
+    return {
+        start: startGame,
+    };
 
-MCTS_Node.prototype.back_propogate = function(simulation) {
-  if (simulation > 0)
-    this.hits++;
-  else if (simulation < 0)
-    this.misses++;
-  this.total_tries++;
-  if (this.parent) {
-    if (this.parent.State.turn === this.State.turn)
-      this.parent.back_propogate(simulation);
-    else this.parent.back_propogate(-simulation);
+})(Display);
+
+
+var MonteCarloPlayer = (function() {
+  /* AI implementing monte carlo tree search algo */
+  var checkWinner, legalMoves, getNextState, canvas, context;
+  var maxMoves = 42;
+  var plays = {};
+  var wins = {};
+
+  function _getCurrentSeconds() {
+    return new Date().getTime() / 1000;
   }
-};
 
-function efficiency_test() {
-  global_ROOT = create_MCTS_root();
-  var total_trials, start = new Date().getTime();
-  for (total_trials = 0; total_trials < 100000; total_trials++)
-    global_ROOT.choose_child();
-  console.log((new Date().getTime() - start) / 1E3);
-  setInterval(function() {
-    for (var i = 0; i < 1000; i++)
-      global_ROOT.choose_child();
-    $('#num-trials').text(global_ROOT.total_tries);
-  }, 1);
-}
+  function assignMethods(checkWinnerMethod, legalMovesMethod, getNextStateMethod) {
+    // TODO: This feels weird and hacky
+    checkWinner = checkWinnerMethod;
+    legalMoves = legalMovesMethod;
+    getNextState = getNextStateMethod;
+  }
 
-function speed_test() {
-  global_ROOT = create_MCTS_root();
-  var total_trials, start = new Date().getTime();
-  for (total_trials = 0; total_trials < 500000; total_trials++)
-    global_ROOT.choose_child();
-  console.log((new Date().getTime() - start) / 1E3);
-}
+  function getPlay(map, timeLimit) {
+    var startTime = _getCurrentSeconds();
+    var gamesPlayed = 0;
+    var legal = legalMoves(map);
+    if (legal.length === 1) {
+      return legal[0];
+    }
+    while (_getCurrentSeconds() - startTime < timeLimit) {
+      gamesPlayed++;
+      _runSimulation(map);
+    }
+    var movesStates = [];
+    for (var legalIndex in legal) {
+      movesStates.push([legal[legalIndex], getNextState(legal[legalIndex], _copyState(map))]);
+    }
+
+    var percentages = {};
+    var play;
+    for (var i = 0; i < movesStates.length; i++) {
+      play = [2, movesStates[i][1]];
+      if (play in wins) {
+        percentages[movesStates[i][0]] = wins[play] / plays[play];
+      } else {
+        percentages[movesStates[i][0]] = 0;
+      }
+    }
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    maxPlay = Object.keys(percentages).reduce(function(a, b) {
+      return percentages[a] > percentages[b] ? a : b;
+    });
+    displayPercentages(percentages, maxPlay);
+    displayGamesSimulated(gamesPlayed, percentages);
+    return parseInt(maxPlay);
+  }
+
+  function _copyState(state) {
+    return state.map(function(arr) {
+        return arr.slice();
+    });
+  }
+
+  function _runSimulation(state) {
+    var visitedStates = [];
+    var i;
+    var player = 2; // Always start as computer ID 2
+    var expand = true;
+    var winnerId = 0;
+    for (i = 0; i < maxMoves; i++) {
+      legal = legalMoves(state);
+      if (legal.length === 0) {
+        break;
+      }
+      play = legal[Math.floor(Math.random() * legal.length)];
+      state = getNextState(play, _copyState(state));
+
+      if (expand && !([player, state] in plays)) {
+        expand = false;
+        plays[[player, state]] = 0;
+        wins[[player, state]] = 0;
+      }
+
+      if (visitedStates.indexOf([player, state]) === -1) {
+        visitedStates.push([player, state]);
+
+      }
+
+      player = (player == 1) ? 2 : 1;
+      winner = checkWinner(state);
+      if (winner.status === true) {
+        winnerId = winner.winnerId;
+        break;
+      }
+    }
+
+    // Next loop for player, state in visitedStates
+    for (i = 0; i < visitedStates.length; i++) {
+      player = visitedStates[i][0];
+      state = visitedStates[i][1];
+      if (!([player, state] in plays)) {
+        continue;
+      }
+      plays[[player, state]] += 1;
+      if (player === winnerId) {
+        wins[[player, state]] += 1;
+      }
+    }
+  }
+
+  function initCanvas() {
+    canvas = document.getElementById('ai-output');
+    context = canvas.getContext('2d');
+  }
+
+  function displayGamesSimulated(gamesSimulated, percentages) {
+    context.font = '12pt sans-serif';
+    context.fillStyle = '#000';
+    var sumPercentages = 0;
+    var percLength = 0;
+    for (column in percentages) {
+      sumPercentages += percentages[column];
+      percLength++;
+    }
+    var avgPercentage = Math.round(sumPercentages / percLength * 100);
+    context.fillText('Games Simulated: ' + gamesSimulated, 130, 50);
+    context.fillText('Avg. Confidence: ' + avgPercentage + '%', 355, 50);
+  }
+
+  function displayPercentages(percentages, maxPlay) {
+    context.save();
+    context.font = '14pt sans-serif';
+    var cleanPercent;
+    for (var x in percentages) {
+      cleanPercent = Math.round(percentages[x] * 100);
+      context.fillStyle = (x === maxPlay) ? '#51d223' : '#000';
+      context.fillText(cleanPercent + '%', 75 * x + 88, 20);
+    }
+    context.restore();
+  }
+
+  function clearCanvas() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  return {
+    maxMoves: maxMoves,
+    assignMethods: assignMethods,
+    getPlay: getPlay,
+    initCanvas: initCanvas,
+    clearCanvas: clearCanvas
+  };
+
+})();
+
+document.addEventListener('DOMContentLoaded', function(event) {
+  MonteCarloPlayer.initCanvas();
+  Game.start(MonteCarloPlayer);
+});

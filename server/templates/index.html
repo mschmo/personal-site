@@ -25,7 +25,7 @@
 
     <div id="main_content" class="eleven columns">
 
-      <div name="blog" id="tab_body_blog">
+      <div name="thoughts" id="tab_body_thoughts">
         {% for post in posts %}
           <span>
             <h4 style="display:inline"><a href="{{ url_for('post', path=post.path) }}">{{ post.title }}</a></h4>

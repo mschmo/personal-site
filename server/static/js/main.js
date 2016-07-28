@@ -29,8 +29,8 @@ $(document).ready(function() {
         $(body).fadeIn('slow');
     }
 
-    $('#tab_blog').click(function() {
-        change_tab($(this), '#tab_body_blog');
+    $('#tab_thoughts').click(function() {
+        change_tab($(this), '#tab_body_thoughts');
     });
     $('#tab_portfolio').click(function() {
         change_tab($(this), '#tab_body_portfolio');
@@ -41,7 +41,7 @@ $(document).ready(function() {
 
     var url_hash = window.location.hash;
     if (location.pathname == '/' && url_hash != '#portfolio' && url_hash != '#contact') {
-        change_tab($('#tab_blog'), '#tab_body_blog');
+        change_tab($('#tab_thoughts'), '#tab_body_thoughts');
     } else if (url_hash == '#portfolio') {
         change_tab($('#tab_portfolio'), '#tab_body_portfolio');
     } else if (url_hash == '#contact') {
