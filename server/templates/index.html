@@ -30,7 +30,7 @@
         {% for post in posts %}
           <span>
             <h4 style="display:inline"><a href="{{ url_for('post', path=post.path) }}">{{ post.title }}</a></h4>
-            <em style="display:inline;float:right">{{ post.date }}</em>
+            <em style="display:inline;float:right">{{ post.published }}</em>
           </span>
           <br /><br />
         {% endfor %}

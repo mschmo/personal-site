@@ -40,8 +40,8 @@ def feed():
         atom_feed.add(article['title'],
                       author='Matt Schmoyer',
                       url=urljoin(request.url_root, article.path),
-                      updated=article['date'],
-                      published=article['date'])
+                      updated=article['published'],
+                      published=article['published'])
     return atom_feed.get_response()
 
 
@@ -57,4 +57,5 @@ def crypto_presentation():
 
 
 def _get_articles_by_date():
-    return sorted(pages, reverse=True, key=lambda p: p.meta['date'])
+    articles = (p for p in pages if 'published' in p.meta)
+    return sorted(articles, reverse=True, key=lambda p: p.meta['published'])
