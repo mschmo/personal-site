@@ -56,10 +56,5 @@ def crypto_presentation():
     return render_template('projects/crypto_presentation.html')
 
 
-@app.route('/projects/connect-four-ai')
-def connect_four_ai():
-    return render_template('projects/connect_four_ai.html')
-
-
 def _get_articles_by_date():
     return sorted(pages, reverse=True, key=lambda p: p.meta['date'])
