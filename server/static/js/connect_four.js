@@ -9,9 +9,9 @@ var Display = (function() {
     var isRendered = false;
     var pieceColors = {
         0: '#FFFFFF',
-        1: '#FF6B6B',
-        2: '#FFE66D',
-        hover: '#4ECDC4'
+        1: '#3ec2e6',
+        2: '#f6a356',
+        hover: '#4ecd7d'
     };
     var boardColor = "#1A535C";
     var discRadius = 25;
@@ -126,6 +126,9 @@ var Game = (function(board) {
   var gameEnded = false;
   var turn = 1;
   var aiTimeLimit = 1; // seconds
+  // For conlcusions
+  var countGames = 0;
+  var countComputerWins = 0;
 
   function _initMap() {
     // Initialize 7x6 map
@@ -214,6 +217,13 @@ var Game = (function(board) {
     return {status: false};
   }
 
+  function _updateStatTexts(className, updatedValue) {
+      var classes = document.getElementsByClassName(className);
+      for (var i = 0; i < classes.length; i++) {
+          classes[i].innerHTML = updatedValue;
+      }
+  }
+
   function _endGame(winner) {
     //this.paused = true;
     gameEnded = true;
@@ -225,6 +235,31 @@ var Game = (function(board) {
       msg += 'Player ' + winner + ' Wins';
     }
     msg += " - Click to Reset";
+    // Conclusions
+    countGames++;
+    if (winner === 2) {
+        countComputerWins++;
+    }
+    var pluralChar = countGames === 1 ? '' : 's';
+    Array.prototype.map.call(document.getElementsByClassName('games-plural'), function(pluralSpan) {
+      pluralSpan.innerHTML = pluralChar;
+    });
+    var percentWins = Math.floor((countComputerWins / countGames) * 100);
+    var activeConclusionParagraph = document.getElementsByClassName('active-conclusion')[0];
+    activeConclusionParagraph.className = activeConclusionParagraph.className.replace(/\bactive-conclusion\b/, '');
+    if (percentWins < 50) {
+        document.getElementById('conc-monte-losing').className += ' active-conclusion';
+      _updateStatTexts('num-wins', countGames - countComputerWins);
+      _updateStatTexts('percent-wins', 100 - percentWins);
+    }
+    else if (percentWins > 50) {
+      document.getElementById('conc-monte-winning').className += ' active-conclusion';
+      _updateStatTexts('num-wins', countComputerWins);
+      _updateStatTexts('percent-wins', percentWins);
+    } else {
+      document.getElementById('conc-tie-games').className += ' active-conclusion';
+    }
+    _updateStatTexts('num-games', countGames);
     board.renderMessage(msg);
   }
 
@@ -395,6 +430,8 @@ var MonteCarloPlayer = (function() {
   var maxMoves = 42;
   var plays = {};
   var wins = {};
+  var totalGamesSimulated = 0;
+  var showGamesSimulated = false;
 
   function _getCurrentSeconds() {
     return new Date().getTime() / 1000;
@@ -407,6 +444,10 @@ var MonteCarloPlayer = (function() {
     getNextState = getNextStateMethod;
   }
 
+  function _formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
   function getPlay(map, timeLimit) {
     var startTime = _getCurrentSeconds();
     var gamesPlayed = 0;
@@ -417,6 +458,13 @@ var MonteCarloPlayer = (function() {
     while (_getCurrentSeconds() - startTime < timeLimit) {
       gamesPlayed++;
       _runSimulation(map);
+    }
+    totalGamesSimulated += gamesPlayed;
+    document.getElementById('simulated-games').innerHTML = _formatNumber(totalGamesSimulated);
+    document.getElementById('games-per-year').innerHTML = _formatNumber(Math.floor(totalGamesSimulated / 365));
+    if (!showGamesSimulated && gamesPlayed > 0) {
+      document.getElementById('conclusion-simulated-games').style.display = 'inherit';
+      showGamesSimulated = true;
     }
     var movesStates = [];
     for (var legalIndex in legal) {
@@ -510,7 +558,7 @@ var MonteCarloPlayer = (function() {
       percLength++;
     }
     var avgPercentage = Math.round(sumPercentages / percLength * 100);
-    context.fillText('Games Simulated: ' + gamesSimulated, 130, 50);
+    context.fillText('Games Simulated: ' + _formatNumber(gamesSimulated), 130, 50);
     context.fillText('Avg. Confidence: ' + avgPercentage + '%', 355, 50);
   }
 

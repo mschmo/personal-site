@@ -31,6 +31,22 @@
   </script>
   <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
+  {% if post.images %}
+    {% include 'component/image_modal.html' %}
+    <script>
+      var imageModal = document.getElementById('modal-image');
+      var popImageModal = function() {
+          var modalImg = document.getElementById("modal-image-display");
+          imageModal.style.display = 'block';
+          modalImg.src = this.src;
+          modalImg.alt = this.alt;
+          document.getElementById("image-caption").innerHTML = this.alt;
+      };
+      var img = document.getElementById('test-image');
+      img.onclick = popImageModal;
+    </script>
+  {% endif %}
+
 {% endblock main_content %}
 
 {% block scripts %}

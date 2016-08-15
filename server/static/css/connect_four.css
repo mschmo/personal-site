@@ -4,10 +4,22 @@
 }
 
 #connect-four:hover {
-  cursor: hand;
+  cursor: pointer;
 }
 
 #game-title {
   text-align: center;
   padding-bottom: 10px;
+}
+
+#conclusion-simulated-games {
+  display: none;
+}
+
+.possible-conclusion {
+  display: none;
+}
+
+.possible-conclusion.active-conclusion {
+  display: inline;
 }
