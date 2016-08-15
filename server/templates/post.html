@@ -1,22 +1,17 @@
 {% set title = post.title %}
-
-<style>
-  img { width: 55%; }
-  h5 { text-align: center; }
-  .markdown-center { text-align: center; }
-  .get-away { margin: 25px 0 !important; }
-  #post {
-    margin-left:5%;
-    margin-right:5%
-  }
-</style>
-
 {% extends "base.html" %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/post.css') }}">
+    {% for style in post.styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/{}'.format(style)) }}">
+    {% endfor %}
+{% endblock styles %}
 
 {% block main_content %}
   <div id="post">
     <h2>{{ post.title }}</h2>
-    <h6><em>{{ post.date }}</em></h6>
+    <h6><em>{{ post.date_clean }}</em></h6>
     <br>
     {{ post.html|safe }}
 
@@ -36,4 +31,26 @@
   </script>
   <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
+  {% if post.images %}
+    {% include 'component/image_modal.html' %}
+    <script>
+      var imageModal = document.getElementById('modal-image');
+      var popImageModal = function() {
+          var modalImg = document.getElementById("modal-image-display");
+          imageModal.style.display = 'block';
+          modalImg.src = this.src;
+          modalImg.alt = this.alt;
+          document.getElementById("image-caption").innerHTML = this.alt;
+      };
+      var img = document.getElementById('test-image');
+      img.onclick = popImageModal;
+    </script>
+  {% endif %}
+
 {% endblock main_content %}
+
+{% block scripts %}
+    {% for script in post.scripts %}
+        <script src="{{ url_for('static', filename='js/{}'.format(script)) }}"></script>
+    {% endfor %}
+{% endblock scripts %}

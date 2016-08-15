@@ -1,0 +1,25 @@
+#connect-four, #ai-output {
+  display: block;
+  margin: 0 auto;
+}
+
+#connect-four:hover {
+  cursor: pointer;
+}
+
+#game-title {
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+#conclusion-simulated-games {
+  display: none;
+}
+
+.possible-conclusion {
+  display: none;
+}
+
+.possible-conclusion.active-conclusion {
+  display: inline;
+}

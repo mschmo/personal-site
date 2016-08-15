@@ -51,7 +51,7 @@ def post(path):
     return render_template('post.html', post=page)
 
 
-@app.route('/projects/crypto_presentation')
+@app.route('/projects/crypto-presentation')
 def crypto_presentation():
     return render_template('projects/crypto_presentation.html')
 
