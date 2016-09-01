@@ -1,3 +1,4 @@
+boto=2.24.0
 Fabric==1.10.0
 Flask==0.10.1
 Flask-FlatPages==0.5
