@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Reveal.js Speech Plugin</title>
+
+    <meta name="description" content="Example Reveal.js slideshow with speech plugin">
+    <meta name="author" content="Matt Schmoyer">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reveal/reveal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reveal/theme/solarized.css') }}" id="theme">
+  </head>
+
+  <body>
+
+    <div class="reveal">
+      <div class="slides">
+
+        <section>
+          <h1>Talk to Your Presentation</h1>
+          <h3>Reveal.js Speech Plugin Example</h3>
+          <p>
+            <small>Say "goto next" to get started.</small>
+          </p>
+        </section>
+
+        <section>
+          <h2>How does it work?</h2>
+          <p>This plugin leverages Web Speech API's SpeechRecognition interface and connects it with the Reveal.js API</p>
+        </section>
+
+        <section>
+          <h2>What can you do with it?</h2>
+          <p>Out of the box, this plugin comes with the following commands:</p>
+          <ul>
+            <small>
+              <li>"Goto Next" - Next slide</li>
+              <li>"Goto Previous" - Previous slide</li>
+              <li>"Goto Last" - The final slide</li>
+              <li>"Goto First" - The first slide</li>
+            </small>
+          </ul>
+          <p>But it also allows for plenty of customization.</p>
+        </section>
+
+        <section data-speech-next="movingalong">
+          <h2>This is a Cool Slide</h2>
+          <p>This slide has a surprise ending. Say "spaghetti" out loud to unveil the hidden message.</p>
+          <div class="fragment" data-speech="spaghetti">
+            <p>Spaghetti is delicious!</p>
+            <p><small>Now say "Moving Along" to continue.</small></p>
+          </div>
+        </section>
+
+        <section>
+          <h2>THE END</h2>
+          <p>Source code and documentation for this plugin can be found <a href="https://github.com/mschmo/reveal-speech">here</a>.</p>
+        </section>
+
+      </div>
+    </div>
+
+    <a href="https://github.com/mschmo/reveal-speech"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+    <script src="{{ url_for('static', filename='js/vendor/head.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor/reveal.js') }}"></script>
+
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'slide',
+        dependencies: [
+            { src: "{{ url_for('static', filename='js/vendor/classList.js') }}", condition: function() { return !document.body.classList; } },
+            { src: "{{ url_for('static', filename='js/vendor/highlight.js') }}", async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+            { src: "{{ url_for('static', filename='js/reveal_speech.js') }}", callback: function() { RevealSpeech.configure({ debug: true }); } }
+        ]
+      });
+    </script>
+
+  </body>
+</html>

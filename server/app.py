@@ -56,6 +56,11 @@ def crypto_presentation():
     return render_template('projects/crypto_presentation.html')
 
 
+@app.route('/projects/speech-presentation')
+def speech_presentation():
+    return render_template('projects/speech_presentation.html')
+
+
 def _get_articles_by_date():
     articles = (p for p in pages if 'published' in p.meta)
     return sorted(articles, reverse=True, key=lambda p: p.meta['published'])
