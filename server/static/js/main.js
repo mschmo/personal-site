@@ -3,10 +3,15 @@ $(document).ready(function() {
 
     $('#send-message').submit(function(e) {
         e.preventDefault();
+        var inputData = $(this).serializeArray();
+        var data = {};
+        $.each(inputData, function(i, input) {
+            data[input['name']] = input['value'];
+        });
         $.ajax({
             url: 'https://yda6chi58f.execute-api.us-east-1.amazonaws.com/prod/contact-email',
             type: 'POST',
-            data : JSON.stringify($(this).serialize()),
+            data : JSON.stringify(data),
             headers: {
                 'x-api-key': 'MGZRERAQAo225tTRkKJu5arHMK0vICn293v3UeMC',
                 'Content-Type': 'application/json'
