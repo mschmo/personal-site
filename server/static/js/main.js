@@ -3,9 +3,17 @@ $(document).ready(function() {
 
     $('#send-message').submit(function(e) {
         e.preventDefault();
-        $.post('/send_message/', $(this).serialize()).done(function(data) {
-            $('#holla-at-me').hide();
-            $('#thanks-for-the-holla').fadeIn('slow');
+        $.ajax({
+            url: 'https://yda6chi58f.execute-api.us-east-1.amazonaws.com/prod/contact-email',
+            type: 'POST',
+            data : $(this).serialize(),
+            headers: {'x-api-key': 'MGZRERAQAo225tTRkKJu5arHMK0vICn293v3UeMC'},
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                $('#holla-at-me').hide();
+                $('#thanks-for-the-holla').fadeIn('slow');
+            }
         });
     });
 
