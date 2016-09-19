@@ -24,7 +24,6 @@ $(document).ready(function() {
     }
 
     function change_tab(tab, body) {
-        console.log(tab);
         tab_click(tab);
         $(body).fadeIn('slow');
     }
