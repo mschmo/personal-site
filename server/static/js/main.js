@@ -6,8 +6,11 @@ $(document).ready(function() {
         $.ajax({
             url: 'https://yda6chi58f.execute-api.us-east-1.amazonaws.com/prod/contact-email',
             type: 'POST',
-            data : $(this).serialize(),
-            headers: {'x-api-key': 'MGZRERAQAo225tTRkKJu5arHMK0vICn293v3UeMC'},
+            data : JSON.stringify($(this).serialize()),
+            headers: {
+                'x-api-key': 'MGZRERAQAo225tTRkKJu5arHMK0vICn293v3UeMC',
+                'Content-Type': 'application/json'
+            },
             dataType: 'json',
             success: function(data) {
                 console.log(data);
