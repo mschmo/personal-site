@@ -3,9 +3,25 @@ $(document).ready(function() {
 
     $('#send-message').submit(function(e) {
         e.preventDefault();
-        $.post('/send_message/', $(this).serialize()).done(function(data) {
-            $('#holla-at-me').hide();
-            $('#thanks-for-the-holla').fadeIn('slow');
+        var inputData = $(this).serializeArray();
+        var data = {};
+        $.each(inputData, function(i, input) {
+            data[input['name']] = input['value'];
+        });
+        $.ajax({
+            url: 'https://yda6chi58f.execute-api.us-east-1.amazonaws.com/prod/contact-email',
+            type: 'POST',
+            data : JSON.stringify(data),
+            headers: {
+                'x-api-key': 'MGZRERAQAo225tTRkKJu5arHMK0vICn293v3UeMC',
+                'Content-Type': 'application/json'
+            },
+            dataType: 'json',
+            success: function(data) {
+                console.log(data);
+                $('#holla-at-me').hide();
+                $('#thanks-for-the-holla').fadeIn('slow');
+            }
         });
     });
 
@@ -24,7 +40,6 @@ $(document).ready(function() {
     }
 
     function change_tab(tab, body) {
-        console.log(tab);
         tab_click(tab);
         $(body).fadeIn('slow');
     }
