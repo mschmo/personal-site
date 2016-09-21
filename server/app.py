@@ -1,5 +1,3 @@
-import json
-import requests
 from urlparse import urljoin
 from flask import Flask, render_template, request
 from flask_flatpages import FlatPages
@@ -14,22 +12,6 @@ pages = FlatPages(app)
 @app.route('/')
 def index():
     return render_template('index.html', posts=_get_articles_by_date())
-
-
-@app.route('/send_message/', methods=['POST'])
-def send_message():
-    form = request.form
-    response = requests.post(app.config['MAILGUN_MESSAGE_URL'],
-                             auth=('api', app.config['MAILGUN_API_KEY']),
-                             data={
-                                 'from': form['sender'],
-                                 'to': 'mattschmo@gmail.com',
-                                 'subject': 'New Message From Your Site',
-                                 'html': render_template('email.html',
-                                                         message=form['message'],
-                                                         sender=form['sender'])
-                             })
-    return json.dumps({'success': response.text})
 
 
 @app.route('/feed.atom/')
