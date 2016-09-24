@@ -33,12 +33,12 @@ def post(path):
     return render_template('post.html', post=page)
 
 
-@app.route('/projects/crypto-presentation')
+@app.route('/projects/crypto-presentation/')
 def crypto_presentation():
     return render_template('projects/crypto_presentation.html')
 
 
-@app.route('/projects/speech-presentation')
+@app.route('/projects/speech-presentation/')
 def speech_presentation():
     return render_template('projects/speech_presentation.html')
 
