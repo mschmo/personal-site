@@ -15,6 +15,9 @@
         <a class="icon" href="https://www.linkedin.com/in/matthew-schmoyer-b6204765" title="LinkedIn">
           <i class="icon-linkedin"></i>
         </a>
+        <a class="icon" href="{{ url_for('static', filename="resume.pdf") }}" title="Resume">
+          <i class="icon-file"></i>
+        </a>
         <a class="icon" href="mailto:mattschmo@gmail.com?subject=Hello" title="E-Mail">
           <i class="icon-envelope"></i>
         </a>
@@ -39,10 +42,12 @@
       <div name="portfolio" id="tab_body_portfolio" class="none">
         <h4><a href="{{ url_for('speech_presentation') }}">Reveal.js Speech Plugin</a></h4>
         <p>Want to control your slideshow presentations without using your hands? Now you can with this reveal.js plugin that allows users to navigate their presentations with their voice alone.</p>
+        <h4><a href="https://nutricheck.co">NutriCheck</a></h4>
+        <p>Landing site for an nutrition app that a friend of mine wants to make. The site is hosted on S3 and fronted with CloudFlare. The contact form uses Amazon's API Gateway + Lambda to send an email on demand.</p>
+        <h4><a href="https://bitbucket.org/account/user/foodunderground/projects/PROJ">Food Underground</a></h4>
+        <p>This was a custom CMS/website for a catering/food party company using Flask + MySQL on the backend, and plenty of jQuery + Bootstrap on the front. For development purposes there is an ansible role to spin up a Vagrant box and provision the DB.</p>
         <h4><a href="http://www.2929beers.com/">2929 Beers</a></h4>
         <p>Finding the right beer for your fridge can be difficult with the countless options out there. This was the first flask application I ever made, and has been used by my company to allow employees to search and vote on their favorite beers.</p>
-        <h4><a href="{{ url_for('crypto_presentation') }}">Cryptography Slide Show</a></h4>
-        <p>This brief slide show presentation outlines an intro to the wild world of cryptography.</p>
       </div>
 
       <div name="contact" id="tab_body_contact" class="none">
