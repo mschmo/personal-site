@@ -2,3 +2,5 @@ DEBUG = True
 TESTING = True
 FLATPAGES_AUTO_RELOAD = DEBUG
 FLATPAGES_EXTENSION = '.md'
+
+HOSTING_DOMAIN = 'https://mattschmoyer.com'

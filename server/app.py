@@ -1,7 +1,9 @@
 from urlparse import urljoin
-from flask import Flask, render_template, request
+from flask import Flask, render_template, url_for
 from flask_flatpages import FlatPages
 from werkzeug.contrib.atom import AtomFeed
+
+from config_default import HOSTING_DOMAIN
 
 app = Flask(__name__)
 app.config.from_pyfile('config_default.py')
@@ -14,16 +16,18 @@ def index():
     return render_template('index.html', posts=_get_articles_by_date())
 
 
-@app.route('/feed.atom/')
+@app.route('/atom.xml')
 def feed():
-    atom_feed = AtomFeed('Recent Articles', feed_url=request.url, url=request.url_root)
+    atom_feed = AtomFeed('Recent Articles',
+                         feed_url=urljoin(HOSTING_DOMAIN, url_for('feed')),
+                         url=HOSTING_DOMAIN)
     articles = _get_articles_by_date()[:5]
     for article in articles:
-        atom_feed.add(article['title'],
+        atom_feed.add(article.meta['title'],
                       author='Matt Schmoyer',
-                      url=urljoin(request.url_root, article.path),
-                      updated=article['published'],
-                      published=article['published'])
+                      url=urljoin(HOSTING_DOMAIN, article.path),
+                      updated=article.meta['published'],
+                      published=article.meta['published'])
     return atom_feed.get_response()
 
 
