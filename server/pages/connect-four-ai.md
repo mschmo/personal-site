@@ -1,6 +1,6 @@
 title: Connect Four Artificial Intelligence
 date_clean: August 15th 2016
-published: 2016-08-15
+published: 2016-08-15 00:00:00
 images: True
 tags: [games, python, artificial intelligence]
 styles: [connect_four.css]

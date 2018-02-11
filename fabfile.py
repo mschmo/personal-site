@@ -3,6 +3,7 @@ import sys
 
 import boto
 import boto.s3
+from boto.s3.connection import OrdinaryCallingFormat
 from fabric.api import *
 from flask_frozen import Freezer
 
@@ -29,7 +30,7 @@ def freeze_app():
 def deploy():
     # TODO - Don't forget to handle cache busting/invalidation crap if you're using a CDN
     freeze_app()
-    conn = boto.connect_s3()
+    conn = boto.connect_s3(calling_format=OrdinaryCallingFormat())
     bucket = conn.get_bucket(BUCKET_NAME, validate=False)
     upload_file_names = []
     source_dir = os.path.join(os.getcwd(), 'server/build')

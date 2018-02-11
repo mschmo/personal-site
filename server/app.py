@@ -1,9 +1,10 @@
-from urlparse import urljoin
+from urllib.parse import urljoin
+
 from flask import Flask, render_template, url_for
 from flask_flatpages import FlatPages
 from werkzeug.contrib.atom import AtomFeed
 
-from config_default import HOSTING_DOMAIN
+from server.config_default import HOSTING_DOMAIN
 
 app = Flask(__name__)
 app.config.from_pyfile('config_default.py')
