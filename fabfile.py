@@ -16,12 +16,13 @@ PART_SIZE = 6 * 1000 * 1000
 
 
 def percent_cb(complete, total):
+    # TODO - Make me non-arbitrary
     sys.stdout.write('.')
     sys.stdout.flush()
 
 
 @task
-def freeze_app():
+def freeze():
     freezer = Freezer(app)
     freezer.freeze()
 
@@ -29,7 +30,7 @@ def freeze_app():
 @task
 def deploy():
     # TODO - Don't forget to handle cache busting/invalidation crap if you're using a CDN
-    freeze_app()
+    freeze()
     conn = boto.connect_s3(calling_format=OrdinaryCallingFormat())
     bucket = conn.get_bucket(BUCKET_NAME, validate=False)
     upload_file_names = []
