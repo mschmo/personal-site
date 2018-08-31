@@ -3,16 +3,13 @@
 
 {% block main_content %}
     <div class="five columns">
-      <p>Hey there! How are you? My name is Matt. I'm a software engineer in Denver.</p>
-      <p>I put up this site so that I could share my personal thoughts with the world.</p>
-      <p>My areas of interest include biology, music, the Buffalo Bills and grilled cheese sandwiches.</p>
+      <p>Hey there! How are you? My name is Matt. I'm a lead data engineer for the <a href="https://www.denverpost.com/">Denver Post</a>.</p>
+      <p>I put up this site so that I could share my personal thoughts with my Mom.</p>
+      <p>My areas of interest include biology, music, the Buffalo Bills and mountains.</p>
       <hr class="small">
       <div id="social">
         <a class="icon" href="https://github.com/mschmo" title="Github">
           <i class="icon-github"></i>
-        </a>
-        <a class="icon" href="https://www.linkedin.com/in/matthew-schmoyer-b6204765" title="LinkedIn">
-          <i class="icon-linkedin"></i>
         </a>
         <a class="icon" href="{{ url_for('static', filename="resume.pdf") }}" title="Resume">
           <i class="icon-file"></i>
@@ -32,7 +29,7 @@
         {% for post in posts %}
           <span>
             <h4 style="display:inline"><a href="{{ url_for('post', path=post.path) }}">{{ post.title }}</a></h4>
-            <em style="display:inline;float:right">{{ post.published }}</em>
+            <em style="display:inline;float:right">{{ post.published.strftime('%b %d, %Y') }}</em>
           </span>
           <br /><br />
         {% endfor %}
