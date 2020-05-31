@@ -1,5 +1,6 @@
 .idea/
-env
+env/
+env-win/
 *.pyc
 server/build
 config.cfg
