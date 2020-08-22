@@ -2,7 +2,6 @@ import os
 import mimetypes
 
 import boto3
-from fabric.api import *
 from flask_frozen import Freezer
 
 from server.app import app
@@ -11,20 +10,26 @@ from server.app import app
 BUCKET = 'mattschmoyer.com'
 
 
-@task
 def freeze_app():
     freezer = Freezer(app)
     freezer.freeze()
 
 
-@task
-def deploy():
+def deploy(maintenance=False):
     """
     Freeze and put files to S3
+    TODO: Handle cache busting/invalidation crap if you're using a CDN
+
+    :param maintenance: When true set index.html to placeholder maintenance message
     """
     s3 = boto3.client('s3')
 
-    # TODO - Handle cache busting/invalidation crap if you're using a CDN
+    if maintenance:
+        maintenance_file = os.path.join(os.getcwd(), 'server/static/maintenance.html')
+        print(f'Setting maintenance landing page from {maintenance_file}')
+        s3.upload_file(maintenance_file, BUCKET, 'index.html', ExtraArgs={'ContentType': 'text/html'})
+        return
+
     freeze_app()
     upload_file_names = []
     source_dir = os.path.join(os.getcwd(), 'server/build')
@@ -37,5 +42,15 @@ def deploy():
         content_type = mimetypes.guess_type(file_name)[0]
         if content_type:
             extra_args['ContentType'] = content_type
-        print('Uploading {} to Amazon S3 bucket {}'.format(file_name, BUCKET))
+        print(f'Uploading {file_name} to Amazon S3 bucket {BUCKET}')
         s3.upload_file(file_name, BUCKET, dest_path, ExtraArgs=extra_args)
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser('Deploy your site!')
+    parser.add_argument('-m', '--maintenance', action='store_true', help='Flag to set maintenance landing page')
+    args = parser.parse_args()
+
+    deploy(args.maintenance)
